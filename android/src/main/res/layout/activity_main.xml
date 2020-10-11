@@ -20,11 +20,7 @@
     app:cameraPlaySounds="false"
     app:cameraPreview="glSurface"
     app:cameraRequestPermissions="true"
-    app:cameraUseDeviceOrientation="true"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    app:cameraUseDeviceOrientation="true" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
