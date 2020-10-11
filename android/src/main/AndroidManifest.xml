@@ -4,6 +4,8 @@
   package="com.imagepicker"
   >
     <application>
+
+        <activity android:name=".activity.CameraActivity"></activity>
       <provider
             android:name="com.imagepicker.FileProvider"
             android:authorities="${applicationId}.provider"

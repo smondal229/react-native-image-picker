@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<com.otaliastudios.cameraview.CameraView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/camera"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cameraAudio="off"
+    app:cameraEngine="camera1"
+    app:cameraExperimental="false"
+    app:cameraFacing="back"
+    app:cameraFlash="auto"
+    app:cameraGrid="off"
+    app:cameraHdr="on"
+    app:cameraMode="picture"
+    app:cameraPictureFormat="jpeg"
+    app:cameraPlaySounds="false"
+    app:cameraPreview="glSurface"
+    app:cameraRequestPermissions="true"
+    app:cameraUseDeviceOrientation="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/takePicture"
+        android:padding="8dp"
+        android:drawableLeft="@android:drawable/ic_menu_camera"
+        android:layout_marginBottom="48dp"
+        android:layout_gravity="bottom|center"
+        android:text="CAPTURE"/>
+
+</FrameLayout>
