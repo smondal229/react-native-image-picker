@@ -1,4 +1,4 @@
-package com.spinny.camera;
+package com.imagepicker.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 
-public class MainActivity2 extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity {
 
     CameraView cameraView;
 

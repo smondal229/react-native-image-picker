@@ -23,6 +23,8 @@ import android.util.Patterns;
 import android.webkit.MimeTypeMap;
 import android.content.pm.PackageManager;
 
+import com.imagepicker.activity.CameraActivity;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Callback;
