@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import com.imagepicker.R;
 
 public class CameraActivity extends AppCompatActivity {
 
