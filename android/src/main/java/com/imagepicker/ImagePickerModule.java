@@ -73,6 +73,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   public static final int REQUEST_LAUNCH_VIDEO_CAPTURE    = 13004;
   public static final int REQUEST_PERMISSIONS_FOR_CAMERA  = 14001;
   public static final int REQUEST_PERMISSIONS_FOR_LIBRARY = 14002;
+  public static final int REQUEST_PERMISSIONS_FOR_AUDIO = 14003;
 
   private final ReactApplicationContext reactContext;
   private final int dialogThemeId;
@@ -253,6 +254,13 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       return;
     }
 
+    if (!permissionsCheck(currentActivity, callback,REQUEST_PERMISSIONS_FOR_AUDIO ))
+    {
+      return;
+    }
+
+
+
     parseOptions(this.options);
 
     int requestCode;
@@ -287,7 +295,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         responseHelper.invokeError(callback, "Couldn't get file path for photo");
         return;
       }
-      cameraIntent.putExtra("path", cameraCaptureURI);
+      cameraIntent.putExtra("path", original.getAbsolutePath());
     }
 
     if (cameraIntent.resolveActivity(reactContext.getPackageManager()) == null)
@@ -578,6 +586,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     final int cameraPermission = ActivityCompat
             .checkSelfPermission(activity, Manifest.permission.CAMERA);
 
+    final int audioPermission = ActivityCompat
+            .checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO);
+
     boolean permissionsGranted = false;
 
     switch (requestCode) {
@@ -586,6 +597,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         break;
       case REQUEST_PERMISSIONS_FOR_CAMERA:
         permissionsGranted = cameraPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED;
+        break;
+      case REQUEST_PERMISSIONS_FOR_AUDIO:
+        permissionsGranted = audioPermission == PackageManager.PERMISSION_GRANTED;
         break;
     }
 

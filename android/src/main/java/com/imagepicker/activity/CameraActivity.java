@@ -3,6 +3,7 @@ package com.imagepicker.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 
+import com.otaliastudios.cameraview.CameraException;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
@@ -27,49 +29,65 @@ public class CameraActivity extends AppCompatActivity {
 
     CameraView cameraView;
 
+    ProgressDialog progressDialog;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
+        progressDialog=new ProgressDialog(CameraActivity.this);
+
         cameraView=findViewById(R.id.camera);
 
         cameraView.setLifecycleOwner(this);
 
 
-        final String imageSavePath=getIntent().getStringExtra("path");
 
         cameraView.addCameraListener(new CameraListener() {
             @Override
             public void onPictureTaken(@NonNull PictureResult result) {
                 super.onPictureTaken(result);
+
+                final String imageSavePath=getIntent().getStringExtra("path");
+
                 Log.d("DATA", "onPictureTaken: "+ (result.getData().length));
 
-                // Assume block needs to be inside a Try/Catch block.
-                String path = Environment.getExternalStorageDirectory().toString();
-                Integer counter = 0;
-                File file = new File(imageSavePath); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
+                progressDialog.dismiss();
+                // the File to save , append increasing numeric counter to prevent files from getting overwritten.
+                Intent intent=new Intent();
+                intent.putExtra("path",imageSavePath);
                 try {
-                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+                    FileOutputStream outputStream = new FileOutputStream(imageSavePath);
                     outputStream.write(result.getData());
                     outputStream.flush();
                     outputStream.close();
+                    setResult(RESULT_OK,intent);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    setResult(RESULT_CANCELED,intent);
                 }
-                Intent intent=new Intent();
-                intent.putExtra("location",path+"Test"+counter+".jpg");
-                setResult(RESULT_OK,intent);
                 finish();
                 return;
+            }
+
+            @Override
+            public void onCameraError(@NonNull CameraException exception) {
+                super.onCameraError(exception);
+                setResult(RESULT_CANCELED);
+                finish();
             }
         });
 
         findViewById(R.id.takePicture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                cameraView.takePicture();
+                progressDialog.setMessage("Processing");
+                progressDialog.show();
+                cameraView.takePictureSnapshot();
             }
         });
     }
