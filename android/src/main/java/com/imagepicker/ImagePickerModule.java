@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -73,7 +74,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   public static final int REQUEST_LAUNCH_VIDEO_CAPTURE    = 13004;
   public static final int REQUEST_PERMISSIONS_FOR_CAMERA  = 14001;
   public static final int REQUEST_PERMISSIONS_FOR_LIBRARY = 14002;
-  public static final int REQUEST_PERMISSIONS_FOR_AUDIO = 14003;
 
   private final ReactApplicationContext reactContext;
   private final int dialogThemeId;
@@ -253,13 +253,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     {
       return;
     }
-
-    if (!permissionsCheck(currentActivity, callback,REQUEST_PERMISSIONS_FOR_AUDIO ))
-    {
-      return;
-    }
-
-
 
     parseOptions(this.options);
 
@@ -577,6 +570,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     putExtraFileInfo(path, responseHelper);
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
   private boolean permissionsCheck(@NonNull final Activity activity,
                                    @NonNull final Callback callback,
                                    @NonNull final int requestCode)
@@ -586,8 +580,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     final int cameraPermission = ActivityCompat
             .checkSelfPermission(activity, Manifest.permission.CAMERA);
 
-    final int audioPermission = ActivityCompat
-            .checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO);
 
     boolean permissionsGranted = false;
 
@@ -597,9 +589,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         break;
       case REQUEST_PERMISSIONS_FOR_CAMERA:
         permissionsGranted = cameraPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED;
-        break;
-      case REQUEST_PERMISSIONS_FOR_AUDIO:
-        permissionsGranted = audioPermission == PackageManager.PERMISSION_GRANTED;
         break;
     }
 

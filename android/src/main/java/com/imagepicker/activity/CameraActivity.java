@@ -54,7 +54,7 @@ public class CameraActivity extends AppCompatActivity {
 
                 final String imageSavePath=getIntent().getStringExtra("path");
 
-                Log.d("DATA", "onPictureTaken: "+ (result.getData().length));
+                Log.d("DATA", "onPictureTaken here: "+ (result.getData().length));
 
                 progressDialog.dismiss();
                 // the File to save , append increasing numeric counter to prevent files from getting overwritten.
