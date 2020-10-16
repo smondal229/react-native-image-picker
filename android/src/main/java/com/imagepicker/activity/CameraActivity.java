@@ -22,6 +22,17 @@ import com.otaliastudios.cameraview.CameraView;
 import com.otaliastudios.cameraview.PictureResult;
 
 
+import com.imagepicker.R;
+
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+
+
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -113,7 +124,7 @@ public class CameraActivity extends AppCompatActivity {
                 intent.putExtra("path",imageSavePath);
                 try {
                     FileOutputStream outputStream = new FileOutputStream(imageSavePath);
-                    outputStream.write(result.getData());
+                    outputStream.write(data);
                     outputStream.flush();
                     outputStream.close();
                     setResult(RESULT_OK,intent);
