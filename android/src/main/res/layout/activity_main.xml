@@ -22,15 +22,15 @@
     app:cameraRequestPermissions="true"
     app:cameraUseDeviceOrientation="true" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:id="@+id/takePicture"
-        android:padding="8dp"
-        android:drawableLeft="@android:drawable/ic_menu_camera"
-        android:layout_marginBottom="48dp"
-        android:layout_gravity="bottom|center"
-        android:text="CAPTURE"/>
+    <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:gravity="center"
+            android:id="@+id/takePicture"
+            android:padding="8dp"
+            app:srcCompat="@drawable/capture"
+            android:layout_marginBottom="48dp"
+            android:layout_gravity="bottom|center"
+            android:text="CAPTURE"/>
 
 </FrameLayout>
