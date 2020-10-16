@@ -40,7 +40,7 @@ public class CameraActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
 
-    String imageSavePath
+    String imageSavePath;
 
 
 
@@ -95,7 +95,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
 
-    private void showPreview(byte[] data){
+    private void showPreview(final byte[] data){
 
         Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
 
