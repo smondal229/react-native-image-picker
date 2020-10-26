@@ -24,8 +24,8 @@ import android.util.Patterns;
 import android.webkit.MimeTypeMap;
 import android.content.pm.PackageManager;
 
-import com.imagepicker.activity.CameraActivity;
 
+import com.custom.capture.CameraActivity;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Callback;
@@ -272,7 +272,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     else
     {
       requestCode = REQUEST_LAUNCH_IMAGE_CAPTURE;
-      cameraIntent = new Intent(getContext(),CameraActivity.class);
+      cameraIntent = new Intent(getContext(), CameraActivity.class);
 
       final File original = createNewFile(reactContext, this.options, false);
       imageConfig = imageConfig.withOriginalFile(original);
