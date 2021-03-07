@@ -241,7 +241,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
                 public boolean onPreferenceClick(Preference arg0) {
                     if (MyDebug.LOG)
                         Log.d(TAG, "clicked save location");
-                    BaseSpinnyCameraActivity main_activity = (BaseSpinnyCameraActivity) MyPreferenceFragment.this.getActivity();
+                    BaseSpinnyCameraModuleActivity main_activity = (BaseSpinnyCameraModuleActivity) MyPreferenceFragment.this.getActivity();
                     if (main_activity.getStorageUtils().isUsingSAF()) {
                         main_activity.openFolderChooserDialogSAF();
                         return true;
@@ -273,7 +273,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
                             //String uri = sharedPreferences.getString(PreferenceKeys.getSaveLocationSAFPreferenceKey(), "");
                             //if( uri.length() == 0 )
                             {
-                                BaseSpinnyCameraActivity main_activity = (BaseSpinnyCameraActivity) MyPreferenceFragment.this.getActivity();
+                                BaseSpinnyCameraModuleActivity main_activity = (BaseSpinnyCameraModuleActivity) MyPreferenceFragment.this.getActivity();
                                 Toast.makeText(main_activity, R.string.saf_select_save_location, Toast.LENGTH_SHORT).show();
                                 main_activity.openFolderChooserDialogSAF();
                             }
@@ -306,7 +306,7 @@ public class MyPreferenceFragment extends PreferenceFragment implements OnShared
                 	        browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(SpinnnyCameraActivity.getDonateLink()));
             	        	startActivity(browserIntent);
             			}*/
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(BaseSpinnyCameraActivity.getDonateLink()));
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(BaseSpinnyCameraModuleActivity.getDonateLink()));
                         startActivity(browserIntent);
                         return false;
                     }

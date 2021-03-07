@@ -42,7 +42,7 @@ public class MyWidgetProvider extends AppWidgetProvider {
 			else*/ {
 		    	/*if( MyDebug.LOG )
 		    		Log.d(TAG, "don't show above lock screen");*/
-	            Intent intent = new Intent(context, BaseSpinnyCameraActivity.class);
+	            Intent intent = new Intent(context, BaseSpinnyCameraModuleActivity.class);
 	            pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 			}
 

@@ -74,12 +74,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BaseSpinnyCameraActivity extends Activity {
-    private static final String TAG = BaseSpinnyCameraActivity.class.getSimpleName();
+public abstract class BaseSpinnyCameraModuleActivity extends Activity {
+    private static final String TAG = BaseSpinnyCameraModuleActivity.class.getSimpleName();
     private SensorManager mSensorManager = null;
     private Sensor mSensorAccelerometer = null;
     private Sensor mSensorMagnetic = null;
-    public MyApplicationInterface applicationInterface = null;
+    public MyApplicationCameraInterface applicationInterface = null;
     private Preview preview = null;
     private int current_orientation = 0;
     private OrientationEventListener orientationEventListener = null;
@@ -167,7 +167,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "supports_force_video_4k? " + supports_force_video_4k);
 
-        applicationInterface = new MyApplicationInterface(this, savedInstanceState);
+        applicationInterface = new MyApplicationCameraInterface(this, savedInstanceState);
 
 
         initCamera2Support();
@@ -219,7 +219,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
         orientationEventListener = new OrientationEventListener(this) {
             @Override
             public void onOrientationChanged(int orientation) {
-                BaseSpinnyCameraActivity.this.onOrientationChanged(orientation);
+                BaseSpinnyCameraModuleActivity.this.onOrientationChanged(orientation);
             }
         };
 
@@ -1127,7 +1127,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
     private void setProgressSeekbarScaled(SeekBar seekBar, double min_value, double max_value, double value) {
         seekBar.setMax(100);
         double scaling = (value - min_value) / (max_value - min_value);
-        double frac = BaseSpinnyCameraActivity.seekbarScalingInverse(scaling);
+        double frac = BaseSpinnyCameraModuleActivity.seekbarScalingInverse(scaling);
         int percent = (int) (frac * 100.0 + 0.5); // add 0.5 for rounding
         if (percent < 0)
             percent = 0;
@@ -1233,7 +1233,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
                             popup_container.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
 
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BaseSpinnyCameraActivity.this);
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BaseSpinnyCameraModuleActivity.this);
                         String ui_placement = sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(), "ui_right");
                         boolean ui_placement_right = ui_placement.equals("ui_right");
                         ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 1.0f, Animation.RELATIVE_TO_SELF, ui_placement_right ? 0.0f : 1.0f);
@@ -1844,7 +1844,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
                 if (which == clear_index) {
                     if (MyDebug.LOG)
                         Log.d(TAG, "selected clear save history");
-                    new AlertDialog.Builder(BaseSpinnyCameraActivity.this)
+                    new AlertDialog.Builder(BaseSpinnyCameraModuleActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle(R.string.clear_folder_history)
                             .setMessage(R.string.clear_folder_history_question)
@@ -1889,7 +1889,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
                         if (MyDebug.LOG)
                             Log.d(TAG, "changed save_folder from history to: " + save_folder);
                         preview.showToast(null, getResources().getString(R.string.changed_save_location) + "\n" + save_folder);
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BaseSpinnyCameraActivity.this);
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BaseSpinnyCameraModuleActivity.this);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString(PreferenceKeys.getSaveLocationPreferenceKey(), save_folder);
                         editor.apply();
@@ -1970,7 +1970,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
             try {
                 if (MyDebug.LOG)
                     Log.d(TAG, "from " + e1.getX() + " , " + e1.getY() + " to " + e2.getX() + " , " + e2.getY());
-                final ViewConfiguration vc = ViewConfiguration.get(BaseSpinnyCameraActivity.this);
+                final ViewConfiguration vc = ViewConfiguration.get(BaseSpinnyCameraModuleActivity.this);
                 //final int swipeMinDistance = 4*vc.getScaledPagingTouchSlop();
                 final float scale = getResources().getDisplayMetrics().density;
                 final int swipeMinDistance = (int) (160 * scale + 0.5f); // convert dps to pixels
@@ -2114,7 +2114,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     double frac = progress / (double) 100.0;
-                    double scaling = BaseSpinnyCameraActivity.seekbarScaling(frac);
+                    double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
                     float focus_distance = (float) (scaling * preview.getMinimumFocusDistance());
                     preview.setFocusDistance(focus_distance);
                 }
@@ -2145,7 +2145,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
                         double frac = progress / (double) 100.0;
                         if (MyDebug.LOG)
                             Log.d(TAG, "exposure_time frac: " + frac);
-                        double scaling = BaseSpinnyCameraActivity.seekbarScaling(frac);
+                        double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
                         if (MyDebug.LOG)
                             Log.d(TAG, "exposure_time scaling: " + scaling);
                         int min_iso = preview.getMinimumISO();
@@ -2180,7 +2180,7 @@ public abstract class BaseSpinnyCameraActivity extends Activity {
                             //double exposure_time_r = min_exposure_time_r + (frac * (max_exposure_time_r - min_exposure_time_r));
                             //long exposure_time = (long)(1.0 / exposure_time_r);
                             // we use the formula: [100^(percent/100) - 1]/99.0 rather than a simple linear scaling
-                            double scaling = BaseSpinnyCameraActivity.seekbarScaling(frac);
+                            double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
                             if (MyDebug.LOG)
                                 Log.d(TAG, "exposure_time scaling: " + scaling);
                             long min_exposure_time = preview.getMinimumExposureTime();

@@ -13,14 +13,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
-import com.custom.camlib.spinnycamera.BaseSpinnyCameraActivity;
+import com.custom.camlib.spinnycamera.BaseSpinnyCameraModuleActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public class CameraActivity extends BaseSpinnyCameraActivity {
+public class CameraActivity extends BaseSpinnyCameraModuleActivity {
     private static final String TAG = CameraActivity.class.getSimpleName();
     private static final String LOG_TAG = CameraActivity.class.getSimpleName();
     private String photoName;

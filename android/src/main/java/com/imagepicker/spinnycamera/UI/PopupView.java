@@ -29,7 +29,7 @@ import android.widget.TextView;
 
 import com.custom.camlib.MyDebug;
 import com.custom.camlib.R;
-import com.custom.camlib.spinnycamera.BaseSpinnyCameraActivity;
+import com.custom.camlib.spinnycamera.BaseSpinnyCameraModuleActivity;
 import com.custom.camlib.spinnycamera.CameraController.CameraController;
 import com.custom.camlib.spinnycamera.PreferenceKeys;
 import com.custom.camlib.spinnycamera.Preview.Preview;
@@ -57,7 +57,7 @@ public class PopupView extends LinearLayout {
 
 		this.setOrientation(LinearLayout.VERTICAL);
 
-		final BaseSpinnyCameraActivity main_activity = (BaseSpinnyCameraActivity)this.getContext();
+		final BaseSpinnyCameraModuleActivity main_activity = (BaseSpinnyCameraModuleActivity)this.getContext();
 		final Preview preview = main_activity.getPreview();
         List<String> supported_flash_values = preview.getSupportedFlashValues();
     	addButtonOptionsToPopup(supported_flash_values, R.array.flash_icons, R.array.flash_values, getResources().getString(R.string.flash_mode), preview.getCurrentFlashValue(), "TEST_FLASH", new ButtonOptionsPopupListener() {
@@ -441,7 +441,7 @@ public class PopupView extends LinearLayout {
         				Log.d(TAG, "addButtonOptionsToPopup time 2.12: " + (System.currentTimeMillis() - time_s));
 
         			//image_button.setImageResource(resource);
-        			final BaseSpinnyCameraActivity main_activity = (BaseSpinnyCameraActivity)this.getContext();
+        			final BaseSpinnyCameraModuleActivity main_activity = (BaseSpinnyCameraModuleActivity)this.getContext();
         			Bitmap bm = main_activity.getPreloadedBitmap(resource);
         			if( bm != null )
         				image_button.setImageBitmap(bm);
@@ -551,7 +551,7 @@ public class PopupView extends LinearLayout {
 		if( MyDebug.LOG )
 			Log.d(TAG, "addOptionsToPopup: " + title);
     	if( supported_options != null ) {
-    		final BaseSpinnyCameraActivity main_activity = (BaseSpinnyCameraActivity)this.getContext();
+    		final BaseSpinnyCameraModuleActivity main_activity = (BaseSpinnyCameraModuleActivity)this.getContext();
 
     		TextView text_view = new TextView(this.getContext());
     		text_view.setText(title);

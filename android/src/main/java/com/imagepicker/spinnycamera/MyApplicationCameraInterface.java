@@ -53,13 +53,13 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 
-public class MyApplicationInterface implements ApplicationInterface {
+public class MyApplicationCameraInterface implements ApplicationInterface {
     private static final String TAG = "MyApplicationInterface";
 
     private static final String TAG_GPS_IMG_DIRECTION = "GPSImgDirection";
     private static final String TAG_GPS_IMG_DIRECTION_REF = "GPSImgDirectionRef";
 
-    private BaseSpinnyCameraActivity main_activity = null;
+    private BaseSpinnyCameraModuleActivity main_activity = null;
     private LocationSupplier locationSupplier = null;
     private StorageUtils storageUtils = null;
 
@@ -103,7 +103,7 @@ public class MyApplicationInterface implements ApplicationInterface {
     private int zoom_factor = 0;
     private float focus_distance = 0.0f;
 
-    MyApplicationInterface(BaseSpinnyCameraActivity main_activity, Bundle savedInstanceState) {
+    MyApplicationCameraInterface(BaseSpinnyCameraModuleActivity main_activity, Bundle savedInstanceState) {
         if (MyDebug.LOG)
             Log.d(TAG, "MyApplicationInterface");
         this.main_activity = main_activity;

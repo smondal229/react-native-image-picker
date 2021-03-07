@@ -18,7 +18,7 @@ public class TakePhoto extends Activity {
 			Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 
-		Intent intent = new Intent(this, BaseSpinnyCameraActivity.class);
+		Intent intent = new Intent(this, BaseSpinnyCameraModuleActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra(TAKE_PHOTO, true);
 		this.startActivity(intent);
