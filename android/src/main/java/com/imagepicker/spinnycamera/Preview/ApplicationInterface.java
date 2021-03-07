@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.Preview;
+package com.imagepicker.spinnycamera.Preview;
 
 import android.content.Context;
 import android.graphics.Canvas;

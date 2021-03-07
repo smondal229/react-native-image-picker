@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -30,11 +30,11 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.R;
-import com.custom.camlib.spinnycamera.Preview.Preview;
-import com.custom.camlib.spinnycamera.UI.FolderChooserDialog;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
+import com.imagepicker.R;
+import com.imagepicker.spinnycamera.Preview.Preview;
+import com.imagepicker.spinnycamera.UI.FolderChooserDialog;
 
 
 public class MyPreferenceFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {

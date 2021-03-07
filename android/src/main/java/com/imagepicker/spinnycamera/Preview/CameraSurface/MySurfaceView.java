@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.Preview.CameraSurface;
+package com.imagepicker.spinnycamera.Preview.CameraSurface;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,11 +12,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.spinnycamera.CameraController.CameraController;
-import com.custom.camlib.spinnycamera.CameraController.CameraControllerException;
-import com.custom.camlib.spinnycamera.Preview.Preview;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
+import com.imagepicker.spinnycamera.CameraController.CameraController;
+import com.imagepicker.spinnycamera.CameraController.CameraControllerException;
+import com.imagepicker.spinnycamera.Preview.Preview;
 
 
 public class MySurfaceView extends SurfaceView implements CameraSurface {

@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 /**
  * Spinny camera listener.

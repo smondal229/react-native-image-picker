@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,8 +27,8 @@ import android.util.Log;
 import androidx.core.content.ContextCompat;
 
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
 
 import java.io.File;
 import java.io.IOException;

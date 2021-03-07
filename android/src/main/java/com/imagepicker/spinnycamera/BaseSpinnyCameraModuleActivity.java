@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -59,12 +59,12 @@ import android.widget.TextView;
 import android.widget.ZoomControls;
 
 
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.R;
-import com.custom.camlib.spinnycamera.CameraController.CameraController;
-import com.custom.camlib.spinnycamera.CameraController.CameraControllerManager2;
-import com.custom.camlib.spinnycamera.Preview.Preview;
-import com.custom.camlib.spinnycamera.UI.PopupView;
+import com.imagepicker.MyDebug;
+import com.imagepicker.R;
+import com.imagepicker.spinnycamera.CameraController.CameraController;
+import com.imagepicker.spinnycamera.CameraController.CameraControllerManager2;
+import com.imagepicker.spinnycamera.Preview.Preview;
+import com.imagepicker.spinnycamera.UI.PopupView;
 
 import java.io.File;
 import java.io.IOException;

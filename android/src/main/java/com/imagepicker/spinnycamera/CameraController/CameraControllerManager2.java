@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.CameraController;
+package com.imagepicker.spinnycamera.CameraController;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -8,8 +8,8 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.os.Build;
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
 
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)

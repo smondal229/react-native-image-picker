@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.UI;
+package com.imagepicker.spinnycamera.UI;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,12 +27,12 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.R;
-import com.custom.camlib.spinnycamera.BaseSpinnyCameraModuleActivity;
-import com.custom.camlib.spinnycamera.CameraController.CameraController;
-import com.custom.camlib.spinnycamera.PreferenceKeys;
-import com.custom.camlib.spinnycamera.Preview.Preview;
+import com.imagepicker.MyDebug;
+import com.imagepicker.R;
+import com.imagepicker.spinnycamera.BaseSpinnyCameraModuleActivity;
+import com.imagepicker.spinnycamera.CameraController.CameraController;
+import com.imagepicker.spinnycamera.PreferenceKeys;
+import com.imagepicker.spinnycamera.Preview.Preview;
 
 import java.util.ArrayList;
 import java.util.Arrays;

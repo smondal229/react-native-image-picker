@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 public class PreferenceKeys {
     // must be static, to safely call from other Activities

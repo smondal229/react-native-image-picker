@@ -1,4 +1,4 @@
-package com.custom.camlib;
+package com.imagepicker;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
-import com.custom.camlib.spinnycamera.BaseSpinnyCameraModuleActivity;
+import com.imagepicker.spinnycamera.BaseSpinnyCameraModuleActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;

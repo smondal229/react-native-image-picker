@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.CameraController;
+package com.imagepicker.spinnycamera.CameraController;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -33,8 +33,8 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

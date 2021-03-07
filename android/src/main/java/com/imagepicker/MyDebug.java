@@ -1,4 +1,4 @@
-package com.custom.camlib;
+package com.imagepicker;
 
 public class MyDebug {
 	//TODO

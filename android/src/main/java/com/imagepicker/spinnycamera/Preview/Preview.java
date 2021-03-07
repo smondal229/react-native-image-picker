@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.Preview;
+package com.imagepicker.spinnycamera.Preview;
 
 
 import android.Manifest;
@@ -46,21 +46,21 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.R;
-import com.custom.camlib.spinnycamera.CameraController.CameraController;
-import com.custom.camlib.spinnycamera.CameraController.CameraController1;
-import com.custom.camlib.spinnycamera.CameraController.CameraController2;
-import com.custom.camlib.spinnycamera.CameraController.CameraControllerException;
-import com.custom.camlib.spinnycamera.CameraController.CameraControllerManager;
-import com.custom.camlib.spinnycamera.CameraController.CameraControllerManager1;
-import com.custom.camlib.spinnycamera.CameraController.CameraControllerManager2;
-import com.custom.camlib.spinnycamera.Preview.CameraSurface.CameraSurface;
-import com.custom.camlib.spinnycamera.Preview.CameraSurface.MySurfaceView;
-import com.custom.camlib.spinnycamera.Preview.CameraSurface.MyTextureView;
-import com.custom.camlib.spinnycamera.TakePhoto;
-import com.custom.camlib.spinnycamera.ToastBoxer;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
+import com.imagepicker.R;
+import com.imagepicker.spinnycamera.CameraController.CameraController;
+import com.imagepicker.spinnycamera.CameraController.CameraController1;
+import com.imagepicker.spinnycamera.CameraController.CameraController2;
+import com.imagepicker.spinnycamera.CameraController.CameraControllerException;
+import com.imagepicker.spinnycamera.CameraController.CameraControllerManager;
+import com.imagepicker.spinnycamera.CameraController.CameraControllerManager1;
+import com.imagepicker.spinnycamera.CameraController.CameraControllerManager2;
+import com.imagepicker.spinnycamera.Preview.CameraSurface.CameraSurface;
+import com.imagepicker.spinnycamera.Preview.CameraSurface.MySurfaceView;
+import com.imagepicker.spinnycamera.Preview.CameraSurface.MyTextureView;
+import com.imagepicker.spinnycamera.TakePhoto;
+import com.imagepicker.spinnycamera.ToastBoxer;
 
 import java.io.File;
 import java.io.IOException;

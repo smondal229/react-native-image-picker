@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.R;
+import com.imagepicker.MyDebug;
+import com.imagepicker.R;
 
 
 public class MyWidgetProviderTakePhoto extends AppWidgetProvider {

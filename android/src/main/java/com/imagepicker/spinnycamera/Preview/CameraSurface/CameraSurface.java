@@ -1,10 +1,10 @@
-package com.custom.camlib.spinnycamera.Preview.CameraSurface;
+package com.imagepicker.spinnycamera.Preview.CameraSurface;
 
 import android.graphics.Matrix;
 import android.media.MediaRecorder;
 import android.view.View;
 
-import com.custom.camlib.spinnycamera.CameraController.CameraController;
+import com.imagepicker.spinnycamera.CameraController.CameraController;
 
 
 public interface CameraSurface {

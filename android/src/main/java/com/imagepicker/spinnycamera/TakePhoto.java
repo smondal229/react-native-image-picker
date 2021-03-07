@@ -1,11 +1,11 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.custom.camlib.MyDebug;
+import com.imagepicker.MyDebug;
 
 
 public class TakePhoto extends Activity {

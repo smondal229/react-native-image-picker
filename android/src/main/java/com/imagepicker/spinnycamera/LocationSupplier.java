@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 import android.Manifest;
 import android.content.Context;
@@ -14,7 +14,7 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
-import com.custom.camlib.MyDebug;
+import com.imagepicker.MyDebug;
 
 
 public class LocationSupplier {

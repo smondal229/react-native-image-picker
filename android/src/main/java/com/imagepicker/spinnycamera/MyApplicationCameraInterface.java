@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera;
+package com.imagepicker.spinnycamera;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -39,12 +39,12 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.R;
-import com.custom.camlib.spinnycamera.CameraController.CameraController;
-import com.custom.camlib.spinnycamera.Preview.ApplicationInterface;
-import com.custom.camlib.spinnycamera.Preview.Preview;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
+import com.imagepicker.R;
+import com.imagepicker.spinnycamera.CameraController.CameraController;
+import com.imagepicker.spinnycamera.Preview.ApplicationInterface;
+import com.imagepicker.spinnycamera.Preview.Preview;
 
 import java.io.File;
 import java.io.FileNotFoundException;

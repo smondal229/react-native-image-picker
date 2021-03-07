@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.Preview;
+package com.imagepicker.spinnycamera.Preview;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
-import com.custom.camlib.MyDebug;
+import com.imagepicker.MyDebug;
 
 
 public class CanvasView extends View {

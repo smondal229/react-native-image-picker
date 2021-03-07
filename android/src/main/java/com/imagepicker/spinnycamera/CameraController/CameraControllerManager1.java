@@ -1,8 +1,8 @@
-package com.custom.camlib.spinnycamera.CameraController;
+package com.imagepicker.spinnycamera.CameraController;
 
 import android.hardware.Camera;
 
-import com.custom.camlib.DebugHandler;
+import com.imagepicker.DebugHandler;
 
 
 @SuppressWarnings("deprecation")

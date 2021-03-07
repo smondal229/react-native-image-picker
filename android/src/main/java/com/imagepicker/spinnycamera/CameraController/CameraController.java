@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.CameraController;
+package com.imagepicker.spinnycamera.CameraController;
 
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 
 
-import com.custom.camlib.MyDebug;
+import com.imagepicker.MyDebug;
 
 import java.util.List;
 

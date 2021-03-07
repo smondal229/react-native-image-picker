@@ -1,4 +1,4 @@
-package com.custom.camlib.spinnycamera.UI;
+package com.imagepicker.spinnycamera.UI;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -22,11 +22,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
-import com.custom.camlib.DebugHandler;
-import com.custom.camlib.MyDebug;
-import com.custom.camlib.R;
-import com.custom.camlib.spinnycamera.PreferenceKeys;
-import com.custom.camlib.spinnycamera.StorageUtils;
+import com.imagepicker.DebugHandler;
+import com.imagepicker.MyDebug;
+import com.imagepicker.R;
+import com.imagepicker.spinnycamera.PreferenceKeys;
+import com.imagepicker.spinnycamera.StorageUtils;
 
 import java.io.File;
 import java.util.ArrayList;
