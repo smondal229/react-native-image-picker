@@ -65,7 +65,7 @@ dependencies {
     testImplementation "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
     testImplementation "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
 
-
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 
     api 'com.otaliastudios:cameraview:2.6.4'
 
