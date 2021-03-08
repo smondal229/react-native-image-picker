@@ -770,14 +770,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             view.setLayoutParams(layoutParams);
             view.setRotation(ui_rotation);
 
-            view = findViewById(R.id.switch_video);
+            /*view = findViewById(R.id.switch_video);
             layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
             layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
             layoutParams.addRule(align_parent_bottom, 0);
             layoutParams.addRule(left_of, R.id.exposure);
             layoutParams.addRule(right_of, 0);
             view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
+            view.setRotation(ui_rotation);*/
 
             view = findViewById(R.id.trash);
             layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
