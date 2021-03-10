@@ -950,7 +950,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         ImageButton viewCamera = (ImageButton) findViewById(R.id.switch_camera);
         if (preview != null) {
             int resource = 0;
-            if (preview.isVideo()) {
+            if (preview.isVideo()&&false) {
                 if (MyDebug.LOG)
                     Log.d(TAG, "set icon to video");
                 resource = preview.isVideoRecording() ? R.drawable.take_video_recording : R.drawable.take_video_selector;
