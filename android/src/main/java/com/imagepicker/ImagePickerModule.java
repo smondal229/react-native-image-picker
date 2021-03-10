@@ -273,6 +273,8 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     {
       requestCode = REQUEST_LAUNCH_IMAGE_CAPTURE;
       cameraIntent = new Intent(getContext(), CameraActivity.class);
+      cameraIntent.putExtra("image_required",true);
+      cameraIntent.putExtra("video_required",false);
       cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
 
       final File original = createNewFile(reactContext, this.options, false);
