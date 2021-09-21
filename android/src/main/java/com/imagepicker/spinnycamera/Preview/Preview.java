@@ -193,8 +193,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
     private int ui_rotation = 0;
 
-    private boolean supports_face_detection = false;
-    private boolean using_face_detection = false;
     private CameraController.Face[] faces_detected = null;
     private boolean supports_video_stabilization = false;
     private boolean can_disable_shutter_sound = false;
@@ -442,7 +440,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         }
         cancelAutoFocus();
 
-        if (camera_controller != null && !this.using_face_detection) {
+        if (camera_controller != null) {
             this.has_focus_area = false;
             ArrayList<CameraController.Area> areas = getAreas(event.getX(), event.getY());
             if (camera_controller.setFocusAndMeteringArea(areas)) {
@@ -915,8 +913,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
         minimum_focus_distance = 0.0f;
         zoom_ratios = null;
         faces_detected = null;
-        supports_face_detection = false;
-        using_face_detection = false;
         supports_video_stabilization = false;
         can_disable_shutter_sound = false;
         color_effects = null;
@@ -1157,6 +1153,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
             CameraController.SupportedValues supported_values = camera_controller.setSceneMode(value);
             if (supported_values != null) {
+                Log.d("Suvodip - supported values", supported_values.toString());
                 scene_modes = supported_values.values;
                 // now save, so it's available for PreferenceActivity
                 applicationInterface.setSceneModePref(supported_values.selected_value);
@@ -1177,7 +1174,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
                 this.zoom_ratios = camera_features.zoom_ratios;
             }
             this.minimum_focus_distance = camera_features.minimum_focus_distance;
-            this.supports_face_detection = camera_features.supports_face_detection;
             this.sizes = camera_features.picture_sizes;
             supported_flash_values = camera_features.supported_flash_values;
             supported_focus_values = camera_features.supported_focus_values;
@@ -1196,32 +1192,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             this.exposure_step = camera_features.exposure_step;
             this.video_sizes = camera_features.video_sizes;
             this.supported_preview_sizes = camera_features.preview_sizes;
-        }
-
-        {
-            if (MyDebug.LOG)
-                Log.d(TAG, "set up face detection");
-            // get face detection supported
-            this.faces_detected = null;
-            if (this.supports_face_detection) {
-                this.using_face_detection = applicationInterface.getFaceDetectionPref();
-            } else {
-                this.using_face_detection = false;
-            }
-            if (MyDebug.LOG) {
-                Log.d(TAG, "supports_face_detection?: " + supports_face_detection);
-                Log.d(TAG, "using_face_detection?: " + using_face_detection);
-            }
-            if (this.using_face_detection) {
-                class MyFaceDetectionListener implements CameraController.FaceDetectionListener {
-                    @Override
-                    public void onFaceDetection(CameraController.Face[] faces) {
-                        faces_detected = new CameraController.Face[faces.length];
-                        System.arraycopy(faces, 0, faces_detected, 0, faces.length);
-                    }
-                }
-                camera_controller.setFaceDetectionListener(new MyFaceDetectionListener());
-            }
         }
 
         {
@@ -3761,7 +3731,7 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             successfully_focused_time = focus_complete_time;
         }
         ensureFlashCorrect();
-        if (this.using_face_detection && !cancelled) {
+        if (!cancelled) {
             // On some devices such as mtk6589, face detection does not resume as written in documentation so we have
             // to cancelfocus when focus is finished
             if (camera_controller != null) {
@@ -3807,12 +3777,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
             this.is_preview_started = true;
             if (MyDebug.LOG) {
                 Log.d(TAG, "time after starting camera preview: " + (System.currentTimeMillis() - debug_time));
-            }
-            if (this.using_face_detection) {
-                if (MyDebug.LOG)
-                    Log.d(TAG, "start face detection");
-                camera_controller.startFaceDetection();
-                faces_detected = null;
             }
         }
         this.setPreviewPaused(false);
@@ -3903,12 +3867,6 @@ public class Preview implements SurfaceHolder.Callback, TextureView.SurfaceTextu
 
     public double getGeoDirection() {
         return geo_direction[0];
-    }
-
-    public boolean supportsFaceDetection() {
-        if (MyDebug.LOG)
-            Log.d(TAG, "supportsFaceDetection");
-        return supports_face_detection;
     }
 
     public boolean supportsVideoStabilization() {

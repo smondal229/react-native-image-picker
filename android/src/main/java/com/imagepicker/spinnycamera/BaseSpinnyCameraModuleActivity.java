@@ -47,6 +47,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
@@ -120,10 +121,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     // for testing:
     public boolean is_test = false;
     public Bitmap gallery_bitmap = null;
-    public boolean test_low_memory = false;
-    public boolean test_have_angle = false;
-    public float test_angle = 0.0f;
-    public String test_last_saved_image = null;
 
     //private ImageView mImageView;
 
@@ -132,15 +129,18 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
         long time_s = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_base_spinny_camera);
+        if (savedInstanceState != null) { savedInstanceState.clear(); }
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         //TODO init views
         // init views
         mImageView=(ImageView) findViewById(R.id.imageView);
         //mImageView.setImageResource(R.drawable.);
         mTxvCurrentPhotoLabel = (TextView) findViewById(R.id.txv_current_photo_label);
-        mContainerPhotoTemplateList = findViewById(R.id.container_photo_template_list);
-        mImbPhotoListVisibilityToggle = (ImageButton) findViewById(R.id.btn_template_list_toggle);
+//        mContainerPhotoTemplateList = findViewById(R.id.container_photo_template_list);
+//        mImbPhotoListVisibilityToggle = (ImageButton) findViewById(R.id.btn_template_list_toggle);
 
         if (getIntent() != null && getIntent().getExtras() != null) {
             is_test = getIntent().getExtras().getBoolean("test_project");
@@ -169,10 +169,9 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
         applicationInterface = new MyApplicationCameraInterface(this, savedInstanceState);
 
+//        initCamera2Support();
 
-        initCamera2Support();
-
-        setWindowFlagsForCamera();
+//        setWindowFlagsForCamera();
 
         // read save locations
         save_location_history.clear();
@@ -212,8 +211,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         clearSeekBar();
 
         preview = new Preview(applicationInterface, savedInstanceState, ((ViewGroup) this.findViewById(R.id.preview)));
-
-        View switchCameraButton = (View) findViewById(R.id.switch_camera);
         //switchCameraButton.setVisibility(preview.getCameraControllerManager().getNumberOfCameras() > 1 ? View.GONE : View.GONE);
 
         orientationEventListener = new OrientationEventListener(this) {
@@ -276,8 +273,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             setFirstTimeFlag();
         }
 
-        preloadIcons(R.array.flash_icons);
-        preloadIcons(R.array.focus_mode_icons);
+//        preloadIcons(R.array.flash_icons);
+//        preloadIcons(R.array.focus_mode_icons);
 
         textToSpeechSuccess = false;
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -304,57 +301,33 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     }
 
     private void setViewVisibility() {
-        mContainerPhotoTemplateList.setVisibility(View.GONE);
-        if (mPhotoClick == PhotoClick.SINGLE_CLICK) {
-            mImbPhotoListVisibilityToggle.setVisibility(View.GONE);
-            mTxvCurrentPhotoLabel.setVisibility(View.GONE);
-            mImageView.setVisibility(View.GONE);
-        } else {
-            mImbPhotoListVisibilityToggle.setVisibility(View.VISIBLE);
-            mTxvCurrentPhotoLabel.setVisibility(View.VISIBLE);
-            mImageView.setVisibility(View.VISIBLE);
-        }
+//        mContainerPhotoTemplateList.setVisibility(View.GONE);
+//        if (mPhotoClick == PhotoClick.SINGLE_CLICK) {
+//        mImbPhotoListVisibilityToggle.setVisibility(View.GONE);
+        mTxvCurrentPhotoLabel.setVisibility(View.GONE);
+        mImageView.setVisibility(View.GONE);
+//        }
+//        else {
+//            mImbPhotoListVisibilityToggle.setVisibility(View.VISIBLE);
+//            mTxvCurrentPhotoLabel.setVisibility(View.VISIBLE);
+//            mImageView.setVisibility(View.VISIBLE);
+//        }
     }
 
-    public void toggleTemplateListVisibility(View view) {
-        if (mContainerPhotoTemplateList.getVisibility() == View.VISIBLE) {
-            mContainerPhotoTemplateList.setVisibility(View.GONE);
-            view.setRotation(0);
-        } else {
-            mContainerPhotoTemplateList.setVisibility(View.VISIBLE);
-            view.setRotation(180);
-        }
-    }
+//    public void toggleTemplateListVisibility(View view) {
+//        if (mContainerPhotoTemplateList.getVisibility() == View.VISIBLE) {
+//            mContainerPhotoTemplateList.setVisibility(View.GONE);
+//            view.setRotation(0);
+//        } else {
+//            mContainerPhotoTemplateList.setVisibility(View.VISIBLE);
+//            view.setRotation(180);
+//        }
+//    }
 
     /**
      * @param data
      */
     protected abstract void onPhotoTaken(byte[] data);
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void initCamera2Support() {
-        if (MyDebug.LOG)
-            Log.d(TAG, "initCamera2Support");
-        supports_camera2 = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CameraControllerManager2 manager2 = new CameraControllerManager2(this);
-            supports_camera2 = true;
-            if (manager2.getNumberOfCameras() == 0) {
-                if (MyDebug.LOG)
-                    Log.d(TAG, "Camera2 reports 0 cameras");
-                supports_camera2 = false;
-            }
-            for (int i = 0; i < manager2.getNumberOfCameras() && supports_camera2; i++) {
-                if (!manager2.allowCamera2Support(i)) {
-                    if (MyDebug.LOG)
-                        Log.d(TAG, "camera " + i + " doesn't have limited or full support for Camera2 API");
-                    supports_camera2 = false;
-                }
-            }
-        }
-        if (MyDebug.LOG)
-            Log.d(TAG, "supports_camera2? " + supports_camera2);
-    }
 
     private void preloadIcons(int icons_id) {
         long time_s = System.currentTimeMillis();
@@ -529,29 +502,29 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    void setSeekbarZoom() {
-        if (MyDebug.LOG)
-            Log.d(TAG, "setSeekbarZoom");
-        SeekBar zoomSeekBar = (SeekBar) findViewById(R.id.zoom_seekbar);
-        zoomSeekBar.setProgress(preview.getMaxZoom() - preview.getCameraController().getZoom());
-        if (MyDebug.LOG)
-            Log.d(TAG, "progress is now: " + zoomSeekBar.getProgress());
-    }
+//    void setSeekbarZoom() {
+//        if (MyDebug.LOG)
+//            Log.d(TAG, "setSeekbarZoom");
+//        SeekBar zoomSeekBar = (SeekBar) findViewById(R.id.zoom_seekbar);
+//        zoomSeekBar.setProgress(preview.getMaxZoom() - preview.getCameraController().getZoom());
+//        if (MyDebug.LOG)
+//            Log.d(TAG, "progress is now: " + zoomSeekBar.getProgress());
+//    }
 
     public void zoomIn() {
-        changeSeekbar((SeekBar) findViewById(R.id.zoom_seekbar), -1);
+        preview.zoomTo(preview.getCameraController().getZoom() + 1);
     }
-
+//
     public void zoomOut() {
-        changeSeekbar((SeekBar) findViewById(R.id.zoom_seekbar), 1);
+        preview.zoomTo(preview.getCameraController().getZoom() - 1);
     }
 
     public void changeExposure(int change) {
-        changeSeekbar((SeekBar) findViewById(R.id.exposure_seekbar), change);
+//        changeSeekbar((SeekBar) findViewById(R.id.exposure_seekbar), change);
     }
 
     public void changeISO(int change) {
-        changeSeekbar((SeekBar) findViewById(R.id.iso_seekbar), change);
+//        changeSeekbar((SeekBar) findViewById(R.id.iso_seekbar), change);
     }
 
     void changeFocusDistance(int change) {
@@ -714,191 +687,159 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         }
         {
             // we use a dummy button, so that the GUI buttons keep their positioning even if the Settings button is hidden (visibility set to View.GONE)
-            View view = findViewById(R.id.gui_anchor);
+//            View view = findViewById(R.id.gui_anchor);
+//            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            layoutParams.addRule(align_parent_left, 0);
+//            layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
+//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+//            layoutParams.addRule(align_parent_bottom, 0);
+//            layoutParams.addRule(left_of, 0);
+//            layoutParams.addRule(right_of, 0);
+//            view.setLayoutParams(layoutParams);
+//            view.setRotation(ui_rotation);
+
+            View view = findViewById(R.id.settings);
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_left, 0);
             layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, 0);
-            layoutParams.addRule(right_of, 0);
+            layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
+//            layoutParams.addRule(right_of, R.id.gui_anchor);
+//            layoutParams.addRule(left_of, 0);
             view.setLayoutParams(layoutParams);
             view.setRotation(ui_rotation);
 
-            view = findViewById(R.id.settings);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.gui_anchor);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
-
-            view = findViewById(R.id.gallery);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.settings);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
-
-            view = findViewById(R.id.popup);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.gallery);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
+//            view = findViewById(R.id.gallery);
+//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+//            layoutParams.addRule(align_parent_bottom, 0);
+//            layoutParams.addRule(left_of, R.id.settings);
+//            layoutParams.addRule(right_of, 0);
+//            view.setLayoutParams(layoutParams);
+//            view.setRotation(ui_rotation);
+//
+//            view = findViewById(R.id.popup);
+//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+//            layoutParams.addRule(align_parent_bottom, 0);
+//            layoutParams.addRule(left_of, R.id.gallery);
+//            layoutParams.addRule(right_of, 0);
+//            view.setLayoutParams(layoutParams);
+//            view.setRotation(ui_rotation);
 
             view = findViewById(R.id.exposure_lock);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.popup);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
+//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+//            layoutParams.addRule(align_parent_bottom, 0);
+//            layoutParams.addRule(left_of, R.id.popup);
+//            layoutParams.addRule(right_of, 0);
+//            view.setLayoutParams(layoutParams);
+//            view.setRotation(ui_rotation);
+            view.setVisibility(View.GONE);
 
             view = findViewById(R.id.exposure);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.exposure_lock);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
+//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+//            layoutParams.addRule(align_parent_bottom, 0);
+//            layoutParams.addRule(left_of, R.id.exposure_lock);
+//            layoutParams.addRule(right_of, 0);
+//            view.setLayoutParams(layoutParams);
+//            view.setRotation(ui_rotation);
+            view.setVisibility(View.GONE);
 
-            /*view = findViewById(R.id.switch_video);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.exposure);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);*/
-
-            view = findViewById(R.id.trash);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.switch_camera);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
-
-            view = findViewById(R.id.share);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_bottom, 0);
-            layoutParams.addRule(left_of, R.id.trash);
-            layoutParams.addRule(right_of, 0);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(ui_rotation);
+//            view = findViewById(R.id.switch_video);
+//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+//            layoutParams.addRule(align_parent_bottom, 0);
+//            layoutParams.addRule(left_of, R.id.ll_take_photo);
+//            layoutParams.addRule(right_of, 0);
+//            view.setLayoutParams(layoutParams);
+//            view.setRotation(ui_rotation);
 
             view = findViewById(R.id.ll_take_photo);
             layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_left, 0);
-            layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
             view.setLayoutParams(layoutParams);
             view.setRotation(ui_rotation);
-
-            view = findViewById(R.id.zoom);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_parent_left, 0);
-            layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
-            layoutParams.addRule(align_parent_top, 0);
-            layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
-            view.setLayoutParams(layoutParams);
-            view.setRotation(180.0f); // should always match the zoom_seekbar, so that zoom in and out are in the same directions
-
-            view = findViewById(R.id.zoom_seekbar);
-            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_left, 0);
-            layoutParams.addRule(align_right, R.id.zoom);
-            layoutParams.addRule(above, R.id.zoom);
-            layoutParams.addRule(below, 0);
-            view.setLayoutParams(layoutParams);
 
             view = findViewById(R.id.focus_seekbar);
             layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            layoutParams.addRule(align_left, R.id.preview);
-            layoutParams.addRule(align_right, 0);
-            layoutParams.addRule(left_of, R.id.zoom_seekbar);
-            layoutParams.addRule(right_of, 0);
-            layoutParams.addRule(align_top, 0);
-            layoutParams.addRule(align_bottom, R.id.zoom_seekbar);
+//            layoutParams.addRule(align_left, R.id.preview);
+//            layoutParams.addRule(align_right, 0);
+//            layoutParams.addRule(left_of, R.id.zoom_seekbar);
+//            layoutParams.addRule(right_of, 0);
+//            layoutParams.addRule(align_top, 0);
+//            layoutParams.addRule(align_bottom, R.id.zoom_seekbar);
             view.setLayoutParams(layoutParams);
+            view.setVisibility(View.GONE);
         }
 
-        {
+//        {
             // set seekbar info
-            int width_dp = 0;
-            if (ui_rotation == 0 || ui_rotation == 180) {
-                width_dp = 300;
-            } else {
-                width_dp = 200;
-            }
-            int height_dp = 50;
-            final float scale = getResources().getDisplayMetrics().density;
-            int width_pixels = (int) (width_dp * scale + 0.5f); // convert dps to pixels
-            int height_pixels = (int) (height_dp * scale + 0.5f); // convert dps to pixels
+//            int width_dp = 0;
+//            if (ui_rotation == 0 || ui_rotation == 180) {
+//                width_dp = 300;
+//            } else {
+//                width_dp = 200;
+//            }
+//            int height_dp = 50;
+//            final float scale = getResources().getDisplayMetrics().density;
+//            int width_pixels = (int) (width_dp * scale + 0.5f); // convert dps to pixels
+//            int height_pixels = (int) (height_dp * scale + 0.5f); // convert dps to pixels
 
-            View view = findViewById(R.id.exposure_seekbar);
-            view.setRotation(ui_rotation);
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            lp.width = width_pixels;
-            lp.height = height_pixels;
-            view.setLayoutParams(lp);
+//            View view = findViewById(R.id.exposure_seekbar);
+//            view.setRotation(ui_rotation);
+//            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            lp.width = width_pixels;
+//            lp.height = height_pixels;
+//            view.setLayoutParams(lp);
 
-            view = findViewById(R.id.exposure_seekbar_zoom);
-            view.setRotation(ui_rotation);
-            view.setAlpha(0.5f);
+//            view = findViewById(R.id.exposure_seekbar_zoom);
+//            view.setRotation(ui_rotation);
+//            view.setAlpha(0.5f);
+//
+//             n.b., using left_of etc doesn't work properly when using rotation (as the amount of space reserved is based on the UI elements before being rotated)
+//            if (ui_rotation == 0) {
+//                view.setTranslationX(0);
+//                view.setTranslationY(height_pixels);
+//            } else if (ui_rotation == 90) {
+//                view.setTranslationX(-height_pixels);
+//                view.setTranslationY(0);
+//            } else if (ui_rotation == 180) {
+//                view.setTranslationX(0);
+//                view.setTranslationY(-height_pixels);
+//            } else if (ui_rotation == 270) {
+//                view.setTranslationX(height_pixels);
+//                view.setTranslationY(0);
+//            }
 
-            // n.b., using left_of etc doesn't work properly when using rotation (as the amount of space reserved is based on the UI elements before being rotated)
-            if (ui_rotation == 0) {
-                view.setTranslationX(0);
-                view.setTranslationY(height_pixels);
-            } else if (ui_rotation == 90) {
-                view.setTranslationX(-height_pixels);
-                view.setTranslationY(0);
-            } else if (ui_rotation == 180) {
-                view.setTranslationX(0);
-                view.setTranslationY(-height_pixels);
-            } else if (ui_rotation == 270) {
-                view.setTranslationX(height_pixels);
-                view.setTranslationY(0);
-            }
+//            view = findViewById(R.id.iso_seekbar);
+//            view.setRotation(ui_rotation);
+//            lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            lp.width = width_pixels;
+//            lp.height = height_pixels;
+//            view.setLayoutParams(lp);
 
-            view = findViewById(R.id.iso_seekbar);
-            view.setRotation(ui_rotation);
-            lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            lp.width = width_pixels;
-            lp.height = height_pixels;
-            view.setLayoutParams(lp);
+//            view = findViewById(R.id.exposure_time_seekbar);
+//            view.setRotation(ui_rotation);
+//            lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+//            lp.width = width_pixels;
+//            lp.height = height_pixels;
+//            view.setLayoutParams(lp);
+//            if (ui_rotation == 0) {
+//                view.setTranslationX(0);
+//                view.setTranslationY(height_pixels);
+//            } else if (ui_rotation == 90) {
+//                view.setTranslationX(-height_pixels);
+//                view.setTranslationY(0);
+//            } else if (ui_rotation == 180) {
+//                view.setTranslationX(0);
+//                view.setTranslationY(-height_pixels);
+//            } else if (ui_rotation == 270) {
+//                view.setTranslationX(height_pixels);
+//                view.setTranslationY(0);
+//            }
 
-            view = findViewById(R.id.exposure_time_seekbar);
-            view.setRotation(ui_rotation);
-            lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            lp.width = width_pixels;
-            lp.height = height_pixels;
-            view.setLayoutParams(lp);
-            if (ui_rotation == 0) {
-                view.setTranslationX(0);
-                view.setTranslationY(height_pixels);
-            } else if (ui_rotation == 90) {
-                view.setTranslationX(-height_pixels);
-                view.setTranslationY(0);
-            } else if (ui_rotation == 180) {
-                view.setTranslationX(0);
-                view.setTranslationY(-height_pixels);
-            } else if (ui_rotation == 270) {
-                view.setTranslationX(height_pixels);
-                view.setTranslationY(0);
-            }
-
-        }
+//        }
 
         {
             View view = findViewById(R.id.popup_container);
@@ -911,7 +852,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             layoutParams.addRule(align_parent_top, 0);
             view.setLayoutParams(layoutParams);
 
-            view.setRotation(ui_rotation);
+            view.setRotation(ui_rotation + 90);
             // reset:
             view.setTranslationX(0.0f);
             view.setTranslationY(0.0f);
@@ -926,14 +867,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 view.setPivotX(view.getWidth());
                 view.setPivotY(ui_placement_right ? 0.0f : view.getHeight());
                 if (ui_placement_right) {
-                    if (ui_rotation == 90)
+                    if (ui_rotation == 0)
                         view.setTranslationY(view.getWidth());
-                    else if (ui_rotation == 270)
+                    else if (ui_rotation == 180)
                         view.setTranslationX(-view.getHeight());
                 } else {
-                    if (ui_rotation == 90)
+                    if (ui_rotation == 0)
                         view.setTranslationX(-view.getHeight());
-                    else if (ui_rotation == 270)
+                    else if (ui_rotation == 180)
                         view.setTranslationY(-view.getWidth());
                 }
             }
@@ -947,10 +888,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             Log.d(TAG, "setTakePhotoIcon()");
         // set icon for taking photos vs videos
         ImageButton view = (ImageButton) findViewById(R.id.take_photo);
-        ImageButton viewCamera = (ImageButton) findViewById(R.id.switch_camera);
+//        ImageButton viewCamera = (ImageButton) findViewById(R.id.switch_video);
         if (preview != null) {
             int resource = 0;
-            if (preview.isVideo()&&false) {
+            if (preview.isVideo() && false) {
                 if (MyDebug.LOG)
                     Log.d(TAG, "set icon to video");
                 resource = preview.isVideoRecording() ? R.drawable.take_video_recording : R.drawable.take_video_selector;
@@ -961,8 +902,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             }
             view.setImageResource(resource);
             view.setTag(resource); // for testing
-            viewCamera.setImageResource(R.drawable.switch_camera);
-            viewCamera.setVisibility(View.VISIBLE);
+//            viewCamera.setImageResource(R.drawable.switch_video);
+//            viewCamera.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1025,10 +966,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             } else {
                 preview.showToast(switch_camera_toast, R.string.back_camera);
             }
-            View switchCameraButton = (View) findViewById(R.id.switch_camera);
-            switchCameraButton.setEnabled(false); // prevent slowdown if user repeatedly clicks
-            this.preview.setCamera(cameraId);
-            switchCameraButton.setEnabled(true);
+//            View switchCameraButton = (View) findViewById(R.id.switch_camera);
+//            switchCameraButton.setEnabled(false); // prevent slowdown if user repeatedly clicks
+//            this.preview.setCamera(cameraId);
+//            switchCameraButton.setEnabled(true);
         }
     }
 
@@ -1036,10 +977,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "clickedSwitchVideo");
         this.closePopup();
-        View switchVideoButton = (View) findViewById(R.id.switch_video);
-        switchVideoButton.setEnabled(false); // prevent slowdown if user repeatedly clicks
-        this.preview.switchVideo(true, true);
-        switchVideoButton.setEnabled(true);
+//        View switchVideoButton = (View) findViewById(R.id.switch_video);
+//        switchVideoButton.setEnabled(false); // prevent slowdown if user repeatedly clicks
+//        this.preview.switchVideo(true, true);
+//        switchVideoButton.setEnabled(true);
 
         setTakePhotoIcon();
         if (!block_startup_toast) {
@@ -1068,14 +1009,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     }
 
     void clearSeekBar() {
-        View view = findViewById(R.id.exposure_seekbar);
-        view.setVisibility(View.GONE);
-        view = findViewById(R.id.iso_seekbar);
-        view.setVisibility(View.GONE);
-        view = findViewById(R.id.exposure_time_seekbar);
-        view.setVisibility(View.GONE);
-        view = findViewById(R.id.exposure_seekbar_zoom);
-        view.setVisibility(View.GONE);
+//        View view = findViewById(R.id.exposure_seekbar);
+//        view.setVisibility(View.GONE);
+//        view = findViewById(R.id.iso_seekbar);
+//        view.setVisibility(View.GONE);
+//        view = findViewById(R.id.exposure_time_seekbar);
+//        view.setVisibility(View.GONE);
+//        view = findViewById(R.id.exposure_seekbar_zoom);
+//        view.setVisibility(View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -1083,34 +1024,35 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "clickedExposure");
         this.closePopup();
-        SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
-        int exposure_visibility = exposure_seek_bar.getVisibility();
-        SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
-        int iso_visibility = iso_seek_bar.getVisibility();
-        SeekBar exposure_time_seek_bar = ((SeekBar) findViewById(R.id.exposure_time_seekbar));
-        int exposure_time_visibility = iso_seek_bar.getVisibility();
-        boolean is_open = exposure_visibility == View.GONE || iso_visibility == View.GONE || exposure_time_visibility == View.GONE;
-        if (is_open) {
-            clearSeekBar();
-        } else if (preview.getCameraController() != null) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            String value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(), preview.getCameraController().getDefaultISO());
-            if (preview.usingCamera2API() && !value.equals(preview.getCameraController().getDefaultISO())) {
-                // with Camera2 API, when using non-default ISO we instead show sliders for ISO range and exposure time
-                if (preview.supportsISORange()) {
-                    iso_seek_bar.setVisibility(View.VISIBLE);
-                    if (preview.supportsExposureTime()) {
-                        exposure_time_seek_bar.setVisibility(View.VISIBLE);
-                    }
-                }
-            } else {
-                if (preview.supportsExposures()) {
-                    exposure_seek_bar.setVisibility(View.VISIBLE);
-                    ZoomControls seek_bar_zoom = (ZoomControls) findViewById(R.id.exposure_seekbar_zoom);
-                    seek_bar_zoom.setVisibility(View.VISIBLE);
-                }
-            }
-        }
+//        SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
+//        int exposure_visibility = exposure_seek_bar.getVisibility();
+//        SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
+//        int iso_visibility = iso_seek_bar.getVisibility();
+//        SeekBar exposure_time_seek_bar = ((SeekBar) findViewById(R.id.exposure_time_seekbar));
+//        int exposure_time_visibility = iso_seek_bar.getVisibility();
+//        boolean is_open = exposure_visibility == View.GONE || iso_visibility == View.GONE || exposure_time_visibility == View.GONE;
+        //
+//        if (is_open) {
+//            clearSeekBar();
+//        } else if (preview.getCameraController() != null) {
+//            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//            String value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(), preview.getCameraController().getDefaultISO());
+//            if (preview.usingCamera2API() && !value.equals(preview.getCameraController().getDefaultISO())) {
+//                // with Camera2 API, when using non-default ISO we instead show sliders for ISO range and exposure time
+//                if (preview.supportsISORange()) {
+//                    iso_seek_bar.setVisibility(View.VISIBLE);
+//                    if (preview.supportsExposureTime()) {
+//                        exposure_time_seek_bar.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//            } else {
+//                if (preview.supportsExposures()) {
+//                    exposure_seek_bar.setVisibility(View.VISIBLE);
+//                    ZoomControls seek_bar_zoom = (ZoomControls) findViewById(R.id.exposure_seekbar_zoom);
+//                    seek_bar_zoom.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        }
     }
 
     private static double seekbarScaling(double frac) {
@@ -1227,11 +1169,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                         if (MyDebug.LOG)
                             Log.d(TAG, "time after layoutUI: " + (System.currentTimeMillis() - time_s));
                         // stop listening - only want to call this once!
-                        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-                            popup_container.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        } else {
-                            popup_container.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        }
+                        popup_container.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BaseSpinnyCameraModuleActivity.this);
                         String ui_placement = sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(), "ui_right");
@@ -1261,7 +1199,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         bundle.putBoolean("supports_auto_stabilise", this.supports_auto_stabilise);
         bundle.putBoolean("supports_force_video_4k", this.supports_force_video_4k);
         bundle.putBoolean("supports_camera2", this.supports_camera2);
-        bundle.putBoolean("supports_face_detection", this.preview.supportsFaceDetection());
         bundle.putBoolean("supports_video_stabilization", this.preview.supportsVideoStabilization());
         bundle.putBoolean("can_disable_shutter_sound", this.preview.canDisableShutterSound());
 
@@ -1347,7 +1284,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         putBundleExtra(bundle, "flash_values", this.preview.getSupportedFlashValues());
         putBundleExtra(bundle, "focus_values", this.preview.getSupportedFocusValues());
 
-        setWindowFlagsForSettings();
+//        setWindowFlagsForSettings();
         MyPreferenceFragment fragment = new MyPreferenceFragment();
         fragment.setArguments(bundle);
         getFragmentManager().beginTransaction().add(R.id.prefs_container, fragment, "PREFERENCE_FRAGMENT").addToBackStack(null).commit();
@@ -1396,6 +1333,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
         layoutUI(); // needed in case we've changed left/right handed UI
         initLocation(); // in case we've enabled GPS
+        Log.d("Suvodip", "called location");
         if (toast_message != null)
             block_startup_toast = true;
         if (need_reopen || preview.getCameraController() == null) { // if camera couldn't be opened before, might as well try again
@@ -1432,7 +1370,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (fragment != null) {
             if (MyDebug.LOG)
                 Log.d(TAG, "close settings");
-            setWindowFlagsForCamera();
+//            setWindowFlagsForCamera();
             updateForSettings();
         } else {
             if (popupIsOpen()) {
@@ -1444,13 +1382,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     }
 
     boolean usingKitKatImmersiveMode() {
-        // whether we are using a Kit Kat style immersive mode (either hiding GUI, or everything)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            String immersive_mode = sharedPreferences.getString(PreferenceKeys.getImmersiveModePreferenceKey(), "immersive_mode_low_profile");
-            if (immersive_mode.equals("immersive_mode_gui") || immersive_mode.equals("immersive_mode_everything"))
-                return true;
-        }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String immersive_mode = sharedPreferences.getString(PreferenceKeys.getImmersiveModePreferenceKey(), "immersive_mode_low_profile");
+        if (immersive_mode.equals("immersive_mode_gui") || immersive_mode.equals("immersive_mode_everything"))
+            return true;
         return false;
     }
 
@@ -1508,8 +1443,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // force to landscape mode
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         // keep screen active - see http://stackoverflow.com/questions/2131948/force-screen-on
         if (sharedPreferences.getBoolean(PreferenceKeys.getKeepDisplayOnPreferenceKey(), true)) {
             if (MyDebug.LOG)
@@ -1531,17 +1464,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
 
-        // set screen to max brightness - see http://stackoverflow.com/questions/11978042/android-screen-brightness-max-value
-        // done here rather than onCreate, so that changing it in preferences takes effect without restarting app
-        {
-            WindowManager.LayoutParams layout = getWindow().getAttributes();
-            if (sharedPreferences.getBoolean(PreferenceKeys.getMaxBrightnessPreferenceKey(), true)) {
-                layout.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
-            } else {
-                layout.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
-            }
-            getWindow().setAttributes(layout);
-        }
 
         initImmersiveMode();
         camera_in_background = false;
@@ -1549,7 +1471,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
     private void setWindowFlagsForSettings() {
         // allow screen rotation
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         // revert to standard screen blank behaviour
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         // settings should still be protected by screen lock
@@ -1854,7 +1776,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                                     if (MyDebug.LOG)
                                         Log.d(TAG, "confirmed clear save history");
                                     clearFolderHistory();
-                                    setWindowFlagsForCamera();
+//                                    setWindowFlagsForCamera();
                                     showPreview(true);
                                 }
                             })
@@ -1863,7 +1785,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     if (MyDebug.LOG)
                                         Log.d(TAG, "don't clear save history");
-                                    setWindowFlagsForCamera();
+//                                    setWindowFlagsForCamera();
                                     showPreview(true);
                                 }
                             })
@@ -1872,7 +1794,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                                 public void onCancel(DialogInterface arg0) {
                                     if (MyDebug.LOG)
                                         Log.d(TAG, "cancelled clear save history");
-                                    setWindowFlagsForCamera();
+//                                    setWindowFlagsForCamera();
                                     showPreview(true);
                                 }
                             })
@@ -1895,7 +1817,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                         editor.apply();
                         updateFolderHistory(); // to move new selection to most recent
                     }
-                    setWindowFlagsForCamera();
+//                    setWindowFlagsForCamera();
                     showPreview(true);
                 }
             }
@@ -1903,7 +1825,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface arg0) {
-                setWindowFlagsForCamera();
+//                setWindowFlagsForCamera();
                 showPreview(true);
             }
         });
@@ -2040,70 +1962,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             }
         }
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        {
-            if (MyDebug.LOG)
-                Log.d(TAG, "set up zoom");
-            if (MyDebug.LOG)
-                Log.d(TAG, "has_zoom? " + preview.supportsZoom());
-            ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
-            SeekBar zoomSeekBar = (SeekBar) findViewById(R.id.zoom_seekbar);
-
-            if (preview.supportsZoom()) {
-                if (sharedPreferences.getBoolean(PreferenceKeys.getShowZoomControlsPreferenceKey(), false)) {
-                    zoomControls.setIsZoomInEnabled(true);
-                    zoomControls.setIsZoomOutEnabled(true);
-                    zoomControls.setZoomSpeed(20);
-
-                    zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            zoomIn();
-                        }
-                    });
-                    zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            zoomOut();
-                        }
-                    });
-                    if (!applicationInterface.inImmersiveMode()) {
-                        zoomControls.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    zoomControls.setVisibility(View.INVISIBLE); // must be INVISIBLE not GONE, so we can still position the zoomSeekBar relative to it
-                }
-
-                zoomSeekBar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-                zoomSeekBar.setMax(preview.getMaxZoom());
-                zoomSeekBar.setProgress(preview.getMaxZoom() - preview.getCameraController().getZoom());
-                zoomSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "zoom onProgressChanged: " + progress);
-                        preview.zoomTo(preview.getMaxZoom() - progress);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-
-                if (sharedPreferences.getBoolean(PreferenceKeys.getShowZoomSliderControlsPreferenceKey(), true)) {
-                    if (!applicationInterface.inImmersiveMode()) {
-                        zoomSeekBar.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    zoomSeekBar.setVisibility(View.INVISIBLE);
-                }
-            } else {
-                zoomControls.setVisibility(View.GONE);
-                zoomSeekBar.setVisibility(View.GONE);
-            }
-        }
         {
             if (MyDebug.LOG)
                 Log.d(TAG, "set up manual focus");
@@ -2130,115 +1988,115 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             final int visibility = preview.getCurrentFocusValue() != null && this.getPreview().getCurrentFocusValue().equals("focus_mode_manual2") ? View.VISIBLE : View.INVISIBLE;
             focusSeekBar.setVisibility(visibility);
         }
-        {
-            if (preview.supportsISORange()) {
-                if (MyDebug.LOG)
-                    Log.d(TAG, "set up iso");
-                SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
-                iso_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-                setProgressSeekbarScaled(iso_seek_bar, preview.getMinimumISO(), preview.getMaximumISO(), preview.getCameraController().getISO());
-                iso_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "iso seekbar onProgressChanged: " + progress);
-                        double frac = progress / (double) 100.0;
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "exposure_time frac: " + frac);
-                        double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "exposure_time scaling: " + scaling);
-                        int min_iso = preview.getMinimumISO();
-                        int max_iso = preview.getMaximumISO();
-                        int iso = min_iso + (int) (scaling * (max_iso - min_iso));
-                        preview.setISO(iso);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-                if (preview.supportsExposureTime()) {
-                    if (MyDebug.LOG)
-                        Log.d(TAG, "set up exposure time");
-                    SeekBar exposure_time_seek_bar = ((SeekBar) findViewById(R.id.exposure_time_seekbar));
-                    exposure_time_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-                    setProgressSeekbarScaled(exposure_time_seek_bar, preview.getMinimumExposureTime(), preview.getMaximumExposureTime(), preview.getCameraController().getExposureTime());
-                    exposure_time_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (MyDebug.LOG)
-                                Log.d(TAG, "exposure_time seekbar onProgressChanged: " + progress);
-                            double frac = progress / (double) 100.0;
-                            if (MyDebug.LOG)
-                                Log.d(TAG, "exposure_time frac: " + frac);
-                            //long exposure_time = min_exposure_time + (long)(frac * (max_exposure_time - min_exposure_time));
-                            //double exposure_time_r = min_exposure_time_r + (frac * (max_exposure_time_r - min_exposure_time_r));
-                            //long exposure_time = (long)(1.0 / exposure_time_r);
-                            // we use the formula: [100^(percent/100) - 1]/99.0 rather than a simple linear scaling
-                            double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
-                            if (MyDebug.LOG)
-                                Log.d(TAG, "exposure_time scaling: " + scaling);
-                            long min_exposure_time = preview.getMinimumExposureTime();
-                            long max_exposure_time = preview.getMaximumExposureTime();
-                            long exposure_time = min_exposure_time + (long) (scaling * (max_exposure_time - min_exposure_time));
-                            preview.setExposureTime(exposure_time);
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-                        }
-                    });
-                }
-            }
-        }
-        {
-            if (preview.supportsExposures()) {
-                if (MyDebug.LOG)
-                    Log.d(TAG, "set up exposure compensation");
-                final int min_exposure = preview.getMinimumExposure();
-                SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
-                exposure_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-                exposure_seek_bar.setMax(preview.getMaximumExposure() - min_exposure);
-                exposure_seek_bar.setProgress(preview.getCurrentExposure() - min_exposure);
-                exposure_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "exposure seekbar onProgressChanged: " + progress);
-                        preview.setExposure(min_exposure + progress);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                    }
-                });
-
-                ZoomControls seek_bar_zoom = (ZoomControls) findViewById(R.id.exposure_seekbar_zoom);
-                seek_bar_zoom.setOnZoomInClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        changeExposure(1);
-                    }
-                });
-                seek_bar_zoom.setOnZoomOutClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        changeExposure(-1);
-                    }
-                });
-            }
-        }
+//        {
+//            if (preview.supportsISORange()) {
+//                if (MyDebug.LOG)
+//                    Log.d(TAG, "set up iso");
+//                SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
+//                iso_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
+//                setProgressSeekbarScaled(iso_seek_bar, preview.getMinimumISO(), preview.getMaximumISO(), preview.getCameraController().getISO());
+//                iso_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+//                    @Override
+//                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                        if (MyDebug.LOG)
+//                            Log.d(TAG, "iso seekbar onProgressChanged: " + progress);
+//                        double frac = progress / (double) 100.0;
+//                        if (MyDebug.LOG)
+//                            Log.d(TAG, "exposure_time frac: " + frac);
+//                        double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
+//                        if (MyDebug.LOG)
+//                            Log.d(TAG, "exposure_time scaling: " + scaling);
+//                        int min_iso = preview.getMinimumISO();
+//                        int max_iso = preview.getMaximumISO();
+//                        int iso = min_iso + (int) (scaling * (max_iso - min_iso));
+//                        preview.setISO(iso);
+//                    }
+//
+//                    @Override
+//                    public void onStartTrackingTouch(SeekBar seekBar) {
+//                    }
+//
+//                    @Override
+//                    public void onStopTrackingTouch(SeekBar seekBar) {
+//                    }
+//                });
+//                if (preview.supportsExposureTime()) {
+//                    if (MyDebug.LOG)
+//                        Log.d(TAG, "set up exposure time");
+//                    SeekBar exposure_time_seek_bar = ((SeekBar) findViewById(R.id.exposure_time_seekbar));
+//                    exposure_time_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
+//                    setProgressSeekbarScaled(exposure_time_seek_bar, preview.getMinimumExposureTime(), preview.getMaximumExposureTime(), preview.getCameraController().getExposureTime());
+//                    exposure_time_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+//                        @Override
+//                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                            if (MyDebug.LOG)
+//                                Log.d(TAG, "exposure_time seekbar onProgressChanged: " + progress);
+//                            double frac = progress / (double) 100.0;
+//                            if (MyDebug.LOG)
+//                                Log.d(TAG, "exposure_time frac: " + frac);
+//                            //long exposure_time = min_exposure_time + (long)(frac * (max_exposure_time - min_exposure_time));
+//                            //double exposure_time_r = min_exposure_time_r + (frac * (max_exposure_time_r - min_exposure_time_r));
+//                            //long exposure_time = (long)(1.0 / exposure_time_r);
+//                            // we use the formula: [100^(percent/100) - 1]/99.0 rather than a simple linear scaling
+//                            double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
+//                            if (MyDebug.LOG)
+//                                Log.d(TAG, "exposure_time scaling: " + scaling);
+//                            long min_exposure_time = preview.getMinimumExposureTime();
+//                            long max_exposure_time = preview.getMaximumExposureTime();
+//                            long exposure_time = min_exposure_time + (long) (scaling * (max_exposure_time - min_exposure_time));
+//                            preview.setExposureTime(exposure_time);
+//                        }
+//
+//                        @Override
+//                        public void onStartTrackingTouch(SeekBar seekBar) {
+//                        }
+//
+//                        @Override
+//                        public void onStopTrackingTouch(SeekBar seekBar) {
+//                        }
+//                    });
+//                }
+//            }
+//        }
+//        {
+//            if (preview.supportsExposures()) {
+//                if (MyDebug.LOG)
+//                    Log.d(TAG, "set up exposure compensation");
+//                final int min_exposure = preview.getMinimumExposure();
+//                SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
+//                exposure_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
+//                exposure_seek_bar.setMax(preview.getMaximumExposure() - min_exposure);
+//                exposure_seek_bar.setProgress(preview.getCurrentExposure() - min_exposure);
+//                exposure_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+//                    @Override
+//                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                        if (MyDebug.LOG)
+//                            Log.d(TAG, "exposure seekbar onProgressChanged: " + progress);
+//                        preview.setExposure(min_exposure + progress);
+//                    }
+//
+//                    @Override
+//                    public void onStartTrackingTouch(SeekBar seekBar) {
+//                    }
+//
+//                    @Override
+//                    public void onStopTrackingTouch(SeekBar seekBar) {
+//                    }
+//                });
+//
+//                ZoomControls seek_bar_zoom = (ZoomControls) findViewById(R.id.exposure_seekbar_zoom);
+//                seek_bar_zoom.setOnZoomInClickListener(new View.OnClickListener() {
+//                    public void onClick(View v) {
+//                        changeExposure(1);
+//                    }
+//                });
+//                seek_bar_zoom.setOnZoomOutClickListener(new View.OnClickListener() {
+//                    public void onClick(View v) {
+//                        changeExposure(-1);
+//                    }
+//                });
+//            }
+//        }
 
         View exposureButton = (View) findViewById(R.id.exposure);
         exposureButton.setVisibility(View.GONE);
@@ -2315,14 +2173,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         }
         return -1;
     }
-
-    public static String getDonateLink() {
-        return "https://play.google.com/store/apps/details?id=harman.mark.donation";
-    }
-
-    /*public static String getDonateMarketLink() {
-        return "market://details?id=harman.mark.donation";
-    }*/
 
     public Preview getPreview() {
         return this.preview;

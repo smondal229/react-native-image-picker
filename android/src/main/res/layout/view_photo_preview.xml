@@ -8,18 +8,19 @@
 
     <ImageView
         android:id="@+id/imv_photo_preview"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
         android:layout_centerHorizontal="true"
         tools:ignore="ContentDescription"
         tools:src="@android:drawable/ic_menu_call"/>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/button_container"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imv_photo_preview"
         android:gravity="center"
         android:orientation="horizontal">
+<!--        android:layout_below="@id/imv_photo_preview"-->
 
         <Button
             android:id="@+id/btn_ok_photo_dialog"
