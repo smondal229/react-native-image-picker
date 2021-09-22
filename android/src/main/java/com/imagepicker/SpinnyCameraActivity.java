@@ -27,9 +27,9 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 
 
-public class CameraActivity extends BaseSpinnyCameraModuleActivity {
-    private static final String TAG = CameraActivity.class.getSimpleName();
-    private static final String LOG_TAG = CameraActivity.class.getSimpleName();
+public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
+    private static final String TAG = SpinnyCameraActivity.class.getSimpleName();
+    private static final String LOG_TAG = SpinnyCameraActivity.class.getSimpleName();
     private String photoName;
     private String photoPath;
     private int current_orientation = 0;
@@ -204,12 +204,6 @@ public class CameraActivity extends BaseSpinnyCameraModuleActivity {
     protected void onPause() {
         orientationEventListener.disable();
         super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        orientationEventListener.enable();
-        super.onResume();
     }
 }
 

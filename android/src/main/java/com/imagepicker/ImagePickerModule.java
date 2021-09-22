@@ -25,7 +25,7 @@ import android.webkit.MimeTypeMap;
 import android.content.pm.PackageManager;
 
 
-import com.imagepicker.CameraActivity;
+import com.imagepicker.SpinnyCameraActivity;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Callback;
@@ -272,7 +272,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     else
     {
       requestCode = REQUEST_LAUNCH_IMAGE_CAPTURE;
-      cameraIntent = new Intent(getContext(), CameraActivity.class);
+      cameraIntent = new Intent(getContext(), SpinnyCameraActivity.class);
       cameraIntent.putExtra("image_required",true);
       cameraIntent.putExtra("video_required",false);
       cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
