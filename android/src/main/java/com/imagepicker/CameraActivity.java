@@ -205,5 +205,11 @@ public class CameraActivity extends BaseSpinnyCameraModuleActivity {
         orientationEventListener.disable();
         super.onPause();
     }
+
+    @Override
+    protected void onResume() {
+        orientationEventListener.enable();
+        super.onResume();
+    }
 }
 
