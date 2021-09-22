@@ -3,10 +3,10 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.imagepicker"
   >
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application>
-        <activity android:name=".SpinnyCameraActivity"/>
-
+        <activity android:name=".SpinnyCameraActivity" />
 
         <provider
             android:name="com.imagepicker.FileProvider"

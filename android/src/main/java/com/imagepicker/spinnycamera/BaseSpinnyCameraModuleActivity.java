@@ -59,7 +59,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.ZoomControls;
 
-
 import com.imagepicker.MyDebug;
 import com.imagepicker.R;
 import com.imagepicker.spinnycamera.CameraController.CameraController;
@@ -88,7 +87,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     private boolean supports_force_video_4k = false;
     private boolean supports_camera2 = false;
     private ArrayList<String> save_location_history = new ArrayList<String>();
-    private boolean camera_in_background = false; // whether the camera is covered by a fragment/dialog (such as settings or folder picker)
+    private boolean camera_in_background = false; // whether the camera is covered by a fragment/dialog (such as
+                                                  // settings or folder picker)
     private GestureDetector gestureDetector;
     private boolean screen_is_locked = false;
     private Map<Integer, Bitmap> preloaded_bitmap_resources = new Hashtable<>();
@@ -108,7 +108,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     private ToastBoxer changed_auto_stabilise_toast = new ToastBoxer();
     private ToastBoxer exposure_lock_toast = new ToastBoxer();
     private boolean block_startup_toast = false;
-    //TODO
+    // TODO
     // set value in child class before calling super.onCreate method
     protected PhotoClick mPhotoClick;
     protected String mPhotoType;
@@ -122,7 +122,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     public boolean is_test = false;
     public Bitmap gallery_bitmap = null;
 
-    //private ImageView mImageView;
+    // private ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,16 +131,20 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_base_spinny_camera);
-        if (savedInstanceState != null) { savedInstanceState.clear(); }
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        //TODO init views
+        setContentView(R.layout.activity_base_camera_module);
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
+        PreferenceManager.setDefaultValues(this, R.xml.spinny_camera_preferences, false);
+        // TODO init views
         // init views
-        mImageView=(ImageView) findViewById(R.id.imageView);
-        //mImageView.setImageResource(R.drawable.);
+        mImageView = (ImageView) findViewById(R.id.imageView);
+        // mImageView.setImageResource(R.drawable.);
         mTxvCurrentPhotoLabel = (TextView) findViewById(R.id.txv_current_photo_label);
-//        mContainerPhotoTemplateList = findViewById(R.id.container_photo_template_list);
-//        mImbPhotoListVisibilityToggle = (ImageButton) findViewById(R.id.btn_template_list_toggle);
+        // mContainerPhotoTemplateList =
+        // findViewById(R.id.container_photo_template_list);
+        // mImbPhotoListVisibilityToggle = (ImageButton)
+        // findViewById(R.id.btn_template_list_toggle);
 
         if (getIntent() != null && getIntent().getExtras() != null) {
             is_test = getIntent().getExtras().getBoolean("test_project");
@@ -151,16 +155,20 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        //if( activityManager.getMemoryClass() >= 128 ) { // test
+        // if( activityManager.getMemoryClass() >= 128 ) { // test
         if (activityManager.getLargeMemoryClass() >= 128) {
             supports_auto_stabilise = true;
         }
         if (MyDebug.LOG)
             Log.d(TAG, "supports_auto_stabilise? " + supports_auto_stabilise);
 
-        // hack to rule out phones unlikely to have 4K video, so no point even offering the option!
-        // both S5 and Note 3 have 128MB standard and 512MB large heap (tested via Samsung RTL), as does Galaxy K Zoom
-        // also added the check for having 128MB standard heap, to support modded LG G2, which has 128MB standard, 256MB large - see https://sourceforge.net/p/opencamera/tickets/9/
+        // hack to rule out phones unlikely to have 4K video, so no point even offering
+        // the option!
+        // both S5 and Note 3 have 128MB standard and 512MB large heap (tested via
+        // Samsung RTL), as does Galaxy K Zoom
+        // also added the check for having 128MB standard heap, to support modded LG G2,
+        // which has 128MB standard, 256MB large - see
+        // https://sourceforge.net/p/opencamera/tickets/9/
         if (activityManager.getMemoryClass() >= 128 || activityManager.getLargeMemoryClass() >= 512) {
             supports_force_video_4k = true;
         }
@@ -169,9 +177,9 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
         applicationInterface = new MyApplicationCameraInterface(this, savedInstanceState);
 
-//        initCamera2Support();
+        // initCamera2Support();
 
-//        setWindowFlagsForCamera();
+        // setWindowFlagsForCamera();
 
         // read save locations
         save_location_history.clear();
@@ -186,9 +194,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 save_location_history.add(string);
             }
         }
-        // also update, just in case a new folder has been set; this is also necessary to update the gallery icon
+        // also update, just in case a new folder has been set; this is also necessary
+        // to update the gallery icon
         updateFolderHistory();
-        //updateFolderHistory("/sdcard/Pictures/OpenCameraTest");
+        // updateFolderHistory("/sdcard/Pictures/OpenCameraTest");
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
@@ -211,7 +220,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         clearSeekBar();
 
         preview = new Preview(applicationInterface, savedInstanceState, ((ViewGroup) this.findViewById(R.id.preview)));
-        //switchCameraButton.setVisibility(preview.getCameraControllerManager().getNumberOfCameras() > 1 ? View.GONE : View.GONE);
+        // switchCameraButton.setVisibility(preview.getCameraControllerManager().getNumberOfCameras()
+        // > 1 ? View.GONE : View.GONE);
 
         orientationEventListener = new OrientationEventListener(this) {
             @Override
@@ -224,7 +234,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         galleryButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                //preview.showToast(null, "Long click");
+                // preview.showToast(null, "Long click");
                 longClickedGallery();
                 return true;
             }
@@ -233,34 +243,33 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         gestureDetector = new GestureDetector(this, new MyGestureDetector());
 
         View decorView = getWindow().getDecorView();
-        decorView.setOnSystemUiVisibilityChangeListener
-                (new View.OnSystemUiVisibilityChangeListener() {
-                    @Override
-                    public void onSystemUiVisibilityChange(int visibility) {
-                        // Note that system bars will only be "visible" if none of the
-                        // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
-                        if (!usingKitKatImmersiveMode())
-                            return;
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "onSystemUiVisibilityChange: " + visibility);
-                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                            if (MyDebug.LOG)
-                                Log.d(TAG, "system bars now visible");
-                            // The system bars are visible. Make any desired
-                            // adjustments to your UI, such as showing the action bar or
-                            // other navigational controls.
-                            applicationInterface.setImmersiveMode(false);
-                            setImmersiveTimer();
-                        } else {
-                            if (MyDebug.LOG)
-                                Log.d(TAG, "system bars now NOT visible");
-                            // The system bars are NOT visible. Make any desired
-                            // adjustments to your UI, such as hiding the action bar or
-                            // other navigational controls.
-                            applicationInterface.setImmersiveMode(true);
-                        }
-                    }
-                });
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                // Note that system bars will only be "visible" if none of the
+                // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+                if (!usingKitKatImmersiveMode())
+                    return;
+                if (MyDebug.LOG)
+                    Log.d(TAG, "onSystemUiVisibilityChange: " + visibility);
+                if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                    if (MyDebug.LOG)
+                        Log.d(TAG, "system bars now visible");
+                    // The system bars are visible. Make any desired
+                    // adjustments to your UI, such as showing the action bar or
+                    // other navigational controls.
+                    applicationInterface.setImmersiveMode(false);
+                    setImmersiveTimer();
+                } else {
+                    if (MyDebug.LOG)
+                        Log.d(TAG, "system bars now NOT visible");
+                    // The system bars are NOT visible. Make any desired
+                    // adjustments to your UI, such as hiding the action bar or
+                    // other navigational controls.
+                    applicationInterface.setImmersiveMode(true);
+                }
+            }
+        });
 
         boolean has_done_first_time = sharedPreferences.contains(PreferenceKeys.getFirstTimePreferenceKey());
         if (!has_done_first_time && !is_test) {
@@ -273,8 +282,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             setFirstTimeFlag();
         }
 
-//        preloadIcons(R.array.flash_icons);
-//        preloadIcons(R.array.focus_mode_icons);
+        // preloadIcons(R.array.flash_icons);
+        // preloadIcons(R.array.focus_mode_icons);
 
         textToSpeechSuccess = false;
         textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -296,33 +305,32 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "time for Activity startup: " + (System.currentTimeMillis() - time_s));
 
-
         setViewVisibility();
     }
 
     private void setViewVisibility() {
-//        mContainerPhotoTemplateList.setVisibility(View.GONE);
-//        if (mPhotoClick == PhotoClick.SINGLE_CLICK) {
-//        mImbPhotoListVisibilityToggle.setVisibility(View.GONE);
+        // mContainerPhotoTemplateList.setVisibility(View.GONE);
+        // if (mPhotoClick == PhotoClick.SINGLE_CLICK) {
+        // mImbPhotoListVisibilityToggle.setVisibility(View.GONE);
         mTxvCurrentPhotoLabel.setVisibility(View.GONE);
         mImageView.setVisibility(View.GONE);
-//        }
-//        else {
-//            mImbPhotoListVisibilityToggle.setVisibility(View.VISIBLE);
-//            mTxvCurrentPhotoLabel.setVisibility(View.VISIBLE);
-//            mImageView.setVisibility(View.VISIBLE);
-//        }
+        // }
+        // else {
+        // mImbPhotoListVisibilityToggle.setVisibility(View.VISIBLE);
+        // mTxvCurrentPhotoLabel.setVisibility(View.VISIBLE);
+        // mImageView.setVisibility(View.VISIBLE);
+        // }
     }
 
-//    public void toggleTemplateListVisibility(View view) {
-//        if (mContainerPhotoTemplateList.getVisibility() == View.VISIBLE) {
-//            mContainerPhotoTemplateList.setVisibility(View.GONE);
-//            view.setRotation(0);
-//        } else {
-//            mContainerPhotoTemplateList.setVisibility(View.VISIBLE);
-//            view.setRotation(180);
-//        }
-//    }
+    // public void toggleTemplateListVisibility(View view) {
+    // if (mContainerPhotoTemplateList.getVisibility() == View.VISIBLE) {
+    // mContainerPhotoTemplateList.setVisibility(View.GONE);
+    // view.setRotation(0);
+    // } else {
+    // mContainerPhotoTemplateList.setVisibility(View.VISIBLE);
+    // view.setRotation(180);
+    // }
+    // }
 
     /**
      * @param data
@@ -351,7 +359,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             Log.d(TAG, "onDestroy");
             Log.d(TAG, "size of preloaded_bitmap_resources: " + preloaded_bitmap_resources.size());
         }
-        // Need to recycle to avoid out of memory when running tests - probably good practice to do anyway
+        // Need to recycle to avoid out of memory when running tests - probably good
+        // practice to do anyway
         for (Map.Entry<Integer, Bitmap> entry : preloaded_bitmap_resources.entrySet()) {
             if (MyDebug.LOG)
                 Log.d(TAG, "recycle: " + entry.getKey());
@@ -393,29 +402,33 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
             case KeyEvent.KEYCODE_MEDIA_STOP: {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                String volume_keys = sharedPreferences.getString(PreferenceKeys.getVolumeKeysPreferenceKey(), "volume_take_photo");
+                String volume_keys = sharedPreferences.getString(PreferenceKeys.getVolumeKeysPreferenceKey(),
+                        "volume_take_photo");
 
-                if ((keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS
-                        || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
-                        || keyCode == KeyEvent.KEYCODE_MEDIA_STOP)
-                        && !(volume_keys.equals("volume_take_photo"))) {
+                if ((keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
+                        || keyCode == KeyEvent.KEYCODE_MEDIA_STOP) && !(volume_keys.equals("volume_take_photo"))) {
                     AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-                    if (audioManager == null) break;
+                    if (audioManager == null)
+                        break;
                     if (!audioManager.isWiredHeadsetOn())
-                        break; // isWiredHeadsetOn() is deprecated, but comment says "Use only to check is a headset is connected or not."
+                        break; // isWiredHeadsetOn() is deprecated, but comment says "Use only to check is a
+                               // headset is connected or not."
                 }
 
                 if (volume_keys.equals("volume_take_photo")) {
                     takePicture();
                     return true;
                 } else if (volume_keys.equals("volume_focus")) {
-                    if (preview.getCurrentFocusValue() != null && preview.getCurrentFocusValue().equals("focus_mode_manual2")) {
+                    if (preview.getCurrentFocusValue() != null
+                            && preview.getCurrentFocusValue().equals("focus_mode_manual2")) {
                         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP)
                             this.changeFocusDistance(-1);
                         else
                             this.changeFocusDistance(1);
                     } else {
-                        // important not to repeatedly request focus, even though preview.requestAutoFocus() will cancel, as causes problem if key is held down (e.g., flash gets stuck on)
+                        // important not to repeatedly request focus, even though
+                        // preview.requestAutoFocus() will cancel, as causes problem if key is held down
+                        // (e.g., flash gets stuck on)
                         if (!preview.isFocusWaiting()) {
                             if (MyDebug.LOG)
                                 Log.d(TAG, "request focus due to volume key");
@@ -431,7 +444,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                     return true;
                 } else if (volume_keys.equals("volume_exposure")) {
                     if (preview.getCameraController() != null) {
-                        String value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(), preview.getCameraController().getDefaultISO());
+                        String value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(),
+                                preview.getCameraController().getDefaultISO());
                         boolean manual_iso = !value.equals(preview.getCameraController().getDefaultISO());
                         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
                             if (manual_iso) {
@@ -450,12 +464,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                     return true;
                 } else if (volume_keys.equals("volume_auto_stabilise")) {
                     if (this.supports_auto_stabilise) {
-                        boolean auto_stabilise = sharedPreferences.getBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(), false);
+                        boolean auto_stabilise = sharedPreferences
+                                .getBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(), false);
                         auto_stabilise = !auto_stabilise;
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean(PreferenceKeys.getAutoStabilisePreferenceKey(), auto_stabilise);
                         editor.apply();
-                        String message = getResources().getString(R.string.preference_auto_stabilise) + ": " + getResources().getString(auto_stabilise ? R.string.on : R.string.off);
+                        String message = getResources().getString(R.string.preference_auto_stabilise) + ": "
+                                + getResources().getString(auto_stabilise ? R.string.on : R.string.off);
                         preview.showToast(changed_auto_stabilise_toast, message);
                     } else {
                         preview.showToast(changed_auto_stabilise_toast, R.string.auto_stabilise_not_supported);
@@ -465,13 +481,15 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                     // do nothing, but still return true so we don't change volume either
                     return true;
                 }
-                // else do nothing here, but still allow changing of volume (i.e., the default behaviour)
+                // else do nothing here, but still allow changing of volume (i.e., the default
+                // behaviour)
                 break;
             }
             case KeyEvent.KEYCODE_MENU: {
                 // needed to support hardware menu button
                 // tested successfully on Samsung S3 (via RTL)
-                // see http://stackoverflow.com/questions/8264611/how-to-detect-when-user-presses-menu-key-on-their-android-device
+                // see
+                // http://stackoverflow.com/questions/8264611/how-to-detect-when-user-presses-menu-key-on-their-android-device
                 openSettings();
                 return true;
             }
@@ -482,7 +500,9 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 }
             }
             case KeyEvent.KEYCODE_FOCUS: {
-                // important not to repeatedly request focus, even though preview.requestAutoFocus() will cancel - causes problem with hardware camera key where a half-press means to focus
+                // important not to repeatedly request focus, even though
+                // preview.requestAutoFocus() will cancel - causes problem with hardware camera
+                // key where a half-press means to focus
                 if (!preview.isFocusWaiting()) {
                     if (MyDebug.LOG)
                         Log.d(TAG, "request focus due to focus key");
@@ -502,29 +522,31 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-//    void setSeekbarZoom() {
-//        if (MyDebug.LOG)
-//            Log.d(TAG, "setSeekbarZoom");
-//        SeekBar zoomSeekBar = (SeekBar) findViewById(R.id.zoom_seekbar);
-//        zoomSeekBar.setProgress(preview.getMaxZoom() - preview.getCameraController().getZoom());
-//        if (MyDebug.LOG)
-//            Log.d(TAG, "progress is now: " + zoomSeekBar.getProgress());
-//    }
+    // void setSeekbarZoom() {
+    // if (MyDebug.LOG)
+    // Log.d(TAG, "setSeekbarZoom");
+    // SeekBar zoomSeekBar = (SeekBar) findViewById(R.id.zoom_seekbar);
+    // zoomSeekBar.setProgress(preview.getMaxZoom() -
+    // preview.getCameraController().getZoom());
+    // if (MyDebug.LOG)
+    // Log.d(TAG, "progress is now: " + zoomSeekBar.getProgress());
+    // }
 
     public void zoomIn() {
         preview.zoomTo(preview.getCameraController().getZoom() + 1);
     }
-//
+
+    //
     public void zoomOut() {
         preview.zoomTo(preview.getCameraController().getZoom() - 1);
     }
 
     public void changeExposure(int change) {
-//        changeSeekbar((SeekBar) findViewById(R.id.exposure_seekbar), change);
+        // changeSeekbar((SeekBar) findViewById(R.id.exposure_seekbar), change);
     }
 
     public void changeISO(int change) {
-//        changeSeekbar((SeekBar) findViewById(R.id.iso_seekbar), change);
+        // changeSeekbar((SeekBar) findViewById(R.id.iso_seekbar), change);
     }
 
     void changeFocusDistance(int change) {
@@ -578,8 +600,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             Log.d(TAG, "onResume");
         super.onResume();
 
-        // Set black window background; also needed if we hide the virtual buttons in immersive mode
-        // Note that we do it here rather than customising the theme's android:windowBackground, so this doesn't affect other views - in particular, the MyPreferenceFragment settings
+        // Set black window background; also needed if we hide the virtual buttons in
+        // immersive mode
+        // Note that we do it here rather than customising the theme's
+        // android:windowBackground, so this doesn't affect other views - in particular,
+        // the MyPreferenceFragment settings
         getWindow().getDecorView().getRootView().setBackgroundColor(Color.BLACK);
 
         mSensorManager.registerListener(accelerometerListener, mSensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -607,7 +632,9 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (!this.camera_in_background && hasFocus) {
             // low profile mode is cleared when app goes into background
             // and for Kit Kat immersive mode, we want to set up the timer
-            // we do in onWindowFocusChanged rather than onResume(), to also catch when window lost focus due to notification bar being dragged down (which prevents resetting of immersive mode)
+            // we do in onWindowFocusChanged rather than onResume(), to also catch when
+            // window lost focus due to notification bar being dragged down (which prevents
+            // resetting of immersive mode)
             initImmersiveMode();
         }
     }
@@ -629,15 +656,17 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     void layoutUI() {
         if (MyDebug.LOG)
             Log.d(TAG, "layoutUI");
-        //this.preview.updateUIPlacement();
+        // this.preview.updateUIPlacement();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String ui_placement = sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(), "ui_right");
-        // we cache the preference_ui_placement to save having to check it in the draw() method
+        // we cache the preference_ui_placement to save having to check it in the draw()
+        // method
         this.ui_placement_right = ui_placement.equals("ui_right");
         if (MyDebug.LOG)
             Log.d(TAG, "ui_placement: " + ui_placement);
         // new code for orientation fixed to landscape
-        // the display orientation should be locked to landscape, but how many degrees is that?
+        // the display orientation should be locked to landscape, but how many degrees
+        // is that?
         int rotation = this.getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotation) {
@@ -654,9 +683,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 degrees = 270;
                 break;
         }
-        // getRotation is anti-clockwise, but current_orientation is clockwise, so we add rather than subtract
+        // getRotation is anti-clockwise, but current_orientation is clockwise, so we
+        // add rather than subtract
         // relative_orientation is clockwise from landscape-left
-        //int relative_orientation = (current_orientation + 360 - degrees) % 360;
+        // int relative_orientation = (current_orientation + 360 - degrees) % 360;
         int relative_orientation = (current_orientation + degrees) % 360;
         if (MyDebug.LOG) {
             Log.d(TAG, "    current_orientation = " + current_orientation);
@@ -686,73 +716,75 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             align_parent_bottom = RelativeLayout.ALIGN_PARENT_TOP;
         }
         {
-            // we use a dummy button, so that the GUI buttons keep their positioning even if the Settings button is hidden (visibility set to View.GONE)
-//            View view = findViewById(R.id.gui_anchor);
-//            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            layoutParams.addRule(align_parent_left, 0);
-//            layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
-//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-//            layoutParams.addRule(align_parent_bottom, 0);
-//            layoutParams.addRule(left_of, 0);
-//            layoutParams.addRule(right_of, 0);
-//            view.setLayoutParams(layoutParams);
-//            view.setRotation(ui_rotation);
+            // we use a dummy button, so that the GUI buttons keep their positioning even if
+            // the Settings button is hidden (visibility set to View.GONE)
+            // View view = findViewById(R.id.gui_anchor);
+            // RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
+            // view.getLayoutParams();
+            // layoutParams.addRule(align_parent_left, 0);
+            // layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
+            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+            // layoutParams.addRule(align_parent_bottom, 0);
+            // layoutParams.addRule(left_of, 0);
+            // layoutParams.addRule(right_of, 0);
+            // view.setLayoutParams(layoutParams);
+            // view.setRotation(ui_rotation);
 
             View view = findViewById(R.id.settings);
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
             layoutParams.addRule(align_parent_right, RelativeLayout.TRUE);
             layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
-//            layoutParams.addRule(right_of, R.id.gui_anchor);
-//            layoutParams.addRule(left_of, 0);
+            // layoutParams.addRule(right_of, R.id.gui_anchor);
+            // layoutParams.addRule(left_of, 0);
             view.setLayoutParams(layoutParams);
             view.setRotation(ui_rotation);
 
-//            view = findViewById(R.id.gallery);
-//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-//            layoutParams.addRule(align_parent_bottom, 0);
-//            layoutParams.addRule(left_of, R.id.settings);
-//            layoutParams.addRule(right_of, 0);
-//            view.setLayoutParams(layoutParams);
-//            view.setRotation(ui_rotation);
-//
-//            view = findViewById(R.id.popup);
-//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-//            layoutParams.addRule(align_parent_bottom, 0);
-//            layoutParams.addRule(left_of, R.id.gallery);
-//            layoutParams.addRule(right_of, 0);
-//            view.setLayoutParams(layoutParams);
-//            view.setRotation(ui_rotation);
+            // view = findViewById(R.id.gallery);
+            // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+            // layoutParams.addRule(align_parent_bottom, 0);
+            // layoutParams.addRule(left_of, R.id.settings);
+            // layoutParams.addRule(right_of, 0);
+            // view.setLayoutParams(layoutParams);
+            // view.setRotation(ui_rotation);
+            //
+            // view = findViewById(R.id.popup);
+            // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+            // layoutParams.addRule(align_parent_bottom, 0);
+            // layoutParams.addRule(left_of, R.id.gallery);
+            // layoutParams.addRule(right_of, 0);
+            // view.setLayoutParams(layoutParams);
+            // view.setRotation(ui_rotation);
 
             view = findViewById(R.id.exposure_lock);
-//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-//            layoutParams.addRule(align_parent_bottom, 0);
-//            layoutParams.addRule(left_of, R.id.popup);
-//            layoutParams.addRule(right_of, 0);
-//            view.setLayoutParams(layoutParams);
-//            view.setRotation(ui_rotation);
+            // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+            // layoutParams.addRule(align_parent_bottom, 0);
+            // layoutParams.addRule(left_of, R.id.popup);
+            // layoutParams.addRule(right_of, 0);
+            // view.setLayoutParams(layoutParams);
+            // view.setRotation(ui_rotation);
             view.setVisibility(View.GONE);
 
             view = findViewById(R.id.exposure);
-//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-//            layoutParams.addRule(align_parent_bottom, 0);
-//            layoutParams.addRule(left_of, R.id.exposure_lock);
-//            layoutParams.addRule(right_of, 0);
-//            view.setLayoutParams(layoutParams);
-//            view.setRotation(ui_rotation);
+            // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+            // layoutParams.addRule(align_parent_bottom, 0);
+            // layoutParams.addRule(left_of, R.id.exposure_lock);
+            // layoutParams.addRule(right_of, 0);
+            // view.setLayoutParams(layoutParams);
+            // view.setRotation(ui_rotation);
             view.setVisibility(View.GONE);
 
-//            view = findViewById(R.id.switch_video);
-//            layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-//            layoutParams.addRule(align_parent_bottom, 0);
-//            layoutParams.addRule(left_of, R.id.ll_take_photo);
-//            layoutParams.addRule(right_of, 0);
-//            view.setLayoutParams(layoutParams);
-//            view.setRotation(ui_rotation);
+            // view = findViewById(R.id.switch_video);
+            // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
+            // layoutParams.addRule(align_parent_bottom, 0);
+            // layoutParams.addRule(left_of, R.id.ll_take_photo);
+            // layoutParams.addRule(right_of, 0);
+            // view.setLayoutParams(layoutParams);
+            // view.setRotation(ui_rotation);
 
             view = findViewById(R.id.ll_take_photo);
             layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
@@ -763,88 +795,91 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
             view = findViewById(R.id.focus_seekbar);
             layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            layoutParams.addRule(align_left, R.id.preview);
-//            layoutParams.addRule(align_right, 0);
-//            layoutParams.addRule(left_of, R.id.zoom_seekbar);
-//            layoutParams.addRule(right_of, 0);
-//            layoutParams.addRule(align_top, 0);
-//            layoutParams.addRule(align_bottom, R.id.zoom_seekbar);
+            // layoutParams.addRule(align_left, R.id.preview);
+            // layoutParams.addRule(align_right, 0);
+            // layoutParams.addRule(left_of, R.id.zoom_seekbar);
+            // layoutParams.addRule(right_of, 0);
+            // layoutParams.addRule(align_top, 0);
+            // layoutParams.addRule(align_bottom, R.id.zoom_seekbar);
             view.setLayoutParams(layoutParams);
             view.setVisibility(View.GONE);
         }
 
-//        {
-            // set seekbar info
-//            int width_dp = 0;
-//            if (ui_rotation == 0 || ui_rotation == 180) {
-//                width_dp = 300;
-//            } else {
-//                width_dp = 200;
-//            }
-//            int height_dp = 50;
-//            final float scale = getResources().getDisplayMetrics().density;
-//            int width_pixels = (int) (width_dp * scale + 0.5f); // convert dps to pixels
-//            int height_pixels = (int) (height_dp * scale + 0.5f); // convert dps to pixels
+        // {
+        // set seekbar info
+        // int width_dp = 0;
+        // if (ui_rotation == 0 || ui_rotation == 180) {
+        // width_dp = 300;
+        // } else {
+        // width_dp = 200;
+        // }
+        // int height_dp = 50;
+        // final float scale = getResources().getDisplayMetrics().density;
+        // int width_pixels = (int) (width_dp * scale + 0.5f); // convert dps to pixels
+        // int height_pixels = (int) (height_dp * scale + 0.5f); // convert dps to
+        // pixels
 
-//            View view = findViewById(R.id.exposure_seekbar);
-//            view.setRotation(ui_rotation);
-//            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            lp.width = width_pixels;
-//            lp.height = height_pixels;
-//            view.setLayoutParams(lp);
+        // View view = findViewById(R.id.exposure_seekbar);
+        // view.setRotation(ui_rotation);
+        // RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)
+        // view.getLayoutParams();
+        // lp.width = width_pixels;
+        // lp.height = height_pixels;
+        // view.setLayoutParams(lp);
 
-//            view = findViewById(R.id.exposure_seekbar_zoom);
-//            view.setRotation(ui_rotation);
-//            view.setAlpha(0.5f);
-//
-//             n.b., using left_of etc doesn't work properly when using rotation (as the amount of space reserved is based on the UI elements before being rotated)
-//            if (ui_rotation == 0) {
-//                view.setTranslationX(0);
-//                view.setTranslationY(height_pixels);
-//            } else if (ui_rotation == 90) {
-//                view.setTranslationX(-height_pixels);
-//                view.setTranslationY(0);
-//            } else if (ui_rotation == 180) {
-//                view.setTranslationX(0);
-//                view.setTranslationY(-height_pixels);
-//            } else if (ui_rotation == 270) {
-//                view.setTranslationX(height_pixels);
-//                view.setTranslationY(0);
-//            }
+        // view = findViewById(R.id.exposure_seekbar_zoom);
+        // view.setRotation(ui_rotation);
+        // view.setAlpha(0.5f);
+        //
+        // n.b., using left_of etc doesn't work properly when using rotation (as the
+        // amount of space reserved is based on the UI elements before being rotated)
+        // if (ui_rotation == 0) {
+        // view.setTranslationX(0);
+        // view.setTranslationY(height_pixels);
+        // } else if (ui_rotation == 90) {
+        // view.setTranslationX(-height_pixels);
+        // view.setTranslationY(0);
+        // } else if (ui_rotation == 180) {
+        // view.setTranslationX(0);
+        // view.setTranslationY(-height_pixels);
+        // } else if (ui_rotation == 270) {
+        // view.setTranslationX(height_pixels);
+        // view.setTranslationY(0);
+        // }
 
-//            view = findViewById(R.id.iso_seekbar);
-//            view.setRotation(ui_rotation);
-//            lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            lp.width = width_pixels;
-//            lp.height = height_pixels;
-//            view.setLayoutParams(lp);
+        // view = findViewById(R.id.iso_seekbar);
+        // view.setRotation(ui_rotation);
+        // lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+        // lp.width = width_pixels;
+        // lp.height = height_pixels;
+        // view.setLayoutParams(lp);
 
-//            view = findViewById(R.id.exposure_time_seekbar);
-//            view.setRotation(ui_rotation);
-//            lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-//            lp.width = width_pixels;
-//            lp.height = height_pixels;
-//            view.setLayoutParams(lp);
-//            if (ui_rotation == 0) {
-//                view.setTranslationX(0);
-//                view.setTranslationY(height_pixels);
-//            } else if (ui_rotation == 90) {
-//                view.setTranslationX(-height_pixels);
-//                view.setTranslationY(0);
-//            } else if (ui_rotation == 180) {
-//                view.setTranslationX(0);
-//                view.setTranslationY(-height_pixels);
-//            } else if (ui_rotation == 270) {
-//                view.setTranslationX(height_pixels);
-//                view.setTranslationY(0);
-//            }
+        // view = findViewById(R.id.exposure_time_seekbar);
+        // view.setRotation(ui_rotation);
+        // lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+        // lp.width = width_pixels;
+        // lp.height = height_pixels;
+        // view.setLayoutParams(lp);
+        // if (ui_rotation == 0) {
+        // view.setTranslationX(0);
+        // view.setTranslationY(height_pixels);
+        // } else if (ui_rotation == 90) {
+        // view.setTranslationX(-height_pixels);
+        // view.setTranslationY(0);
+        // } else if (ui_rotation == 180) {
+        // view.setTranslationX(0);
+        // view.setTranslationY(-height_pixels);
+        // } else if (ui_rotation == 270) {
+        // view.setTranslationX(height_pixels);
+        // view.setTranslationY(0);
+        // }
 
-//        }
+        // }
 
         {
             View view = findViewById(R.id.popup_container);
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            //layoutParams.addRule(left_of, R.id.popup);
+            // layoutParams.addRule(left_of, R.id.popup);
             layoutParams.addRule(align_right, R.id.popup);
             layoutParams.addRule(below, R.id.popup);
             layoutParams.addRule(align_parent_bottom, RelativeLayout.TRUE);
@@ -888,13 +923,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             Log.d(TAG, "setTakePhotoIcon()");
         // set icon for taking photos vs videos
         ImageButton view = (ImageButton) findViewById(R.id.take_photo);
-//        ImageButton viewCamera = (ImageButton) findViewById(R.id.switch_video);
+        // ImageButton viewCamera = (ImageButton) findViewById(R.id.switch_video);
         if (preview != null) {
             int resource = 0;
             if (preview.isVideo() && false) {
                 if (MyDebug.LOG)
                     Log.d(TAG, "set icon to video");
-                resource = preview.isVideoRecording() ? R.drawable.take_video_recording : R.drawable.take_video_selector;
+                resource = preview.isVideoRecording() ? R.drawable.take_video_recording
+                        : R.drawable.take_video_selector;
             } else {
                 if (MyDebug.LOG)
                     Log.d(TAG, "set icon to photo");
@@ -902,8 +938,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             }
             view.setImageResource(resource);
             view.setTag(resource); // for testing
-//            viewCamera.setImageResource(R.drawable.switch_video);
-//            viewCamera.setVisibility(View.VISIBLE);
+            // viewCamera.setImageResource(R.drawable.switch_video);
+            // viewCamera.setVisibility(View.VISIBLE);
         }
     }
 
@@ -912,11 +948,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     }
 
     private void onOrientationChanged(int orientation) {
-        /*if( MyDebug.LOG ) {
-            Log.d(TAG, "onOrientationChanged()");
-			Log.d(TAG, "orientation: " + orientation);
-			Log.d(TAG, "current_orientation: " + current_orientation);
-		}*/
+        /*
+         * if( MyDebug.LOG ) { Log.d(TAG, "onOrientationChanged()"); Log.d(TAG,
+         * "orientation: " + orientation); Log.d(TAG, "current_orientation: " +
+         * current_orientation); }
+         */
         if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN)
             return;
         int diff = Math.abs(orientation - current_orientation);
@@ -940,8 +976,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     public void onConfigurationChanged(Configuration newConfig) {
         if (MyDebug.LOG)
             Log.d(TAG, "onConfigurationChanged()");
-        // configuration change can include screen orientation (landscape/portrait) when not locked (when settings is open)
-        // needed if app is paused/resumed when settings is open and device is in portrait mode
+        // configuration change can include screen orientation (landscape/portrait) when
+        // not locked (when settings is open)
+        // needed if app is paused/resumed when settings is open and device is in
+        // portrait mode
         preview.setCameraDisplayOrientation();
         super.onConfigurationChanged(newConfig);
     }
@@ -966,10 +1004,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             } else {
                 preview.showToast(switch_camera_toast, R.string.back_camera);
             }
-//            View switchCameraButton = (View) findViewById(R.id.switch_camera);
-//            switchCameraButton.setEnabled(false); // prevent slowdown if user repeatedly clicks
-//            this.preview.setCamera(cameraId);
-//            switchCameraButton.setEnabled(true);
+            // View switchCameraButton = (View) findViewById(R.id.switch_camera);
+            // switchCameraButton.setEnabled(false); // prevent slowdown if user repeatedly
+            // clicks
+            // this.preview.setCamera(cameraId);
+            // switchCameraButton.setEnabled(true);
         }
     }
 
@@ -977,10 +1016,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "clickedSwitchVideo");
         this.closePopup();
-//        View switchVideoButton = (View) findViewById(R.id.switch_video);
-//        switchVideoButton.setEnabled(false); // prevent slowdown if user repeatedly clicks
-//        this.preview.switchVideo(true, true);
-//        switchVideoButton.setEnabled(true);
+        // View switchVideoButton = (View) findViewById(R.id.switch_video);
+        // switchVideoButton.setEnabled(false); // prevent slowdown if user repeatedly
+        // clicks
+        // this.preview.switchVideo(true, true);
+        // switchVideoButton.setEnabled(true);
 
         setTakePhotoIcon();
         if (!block_startup_toast) {
@@ -1009,14 +1049,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     }
 
     void clearSeekBar() {
-//        View view = findViewById(R.id.exposure_seekbar);
-//        view.setVisibility(View.GONE);
-//        view = findViewById(R.id.iso_seekbar);
-//        view.setVisibility(View.GONE);
-//        view = findViewById(R.id.exposure_time_seekbar);
-//        view.setVisibility(View.GONE);
-//        view = findViewById(R.id.exposure_seekbar_zoom);
-//        view.setVisibility(View.GONE);
+        // View view = findViewById(R.id.exposure_seekbar);
+        // view.setVisibility(View.GONE);
+        // view = findViewById(R.id.iso_seekbar);
+        // view.setVisibility(View.GONE);
+        // view = findViewById(R.id.exposure_time_seekbar);
+        // view.setVisibility(View.GONE);
+        // view = findViewById(R.id.exposure_seekbar_zoom);
+        // view.setVisibility(View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -1024,39 +1064,48 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "clickedExposure");
         this.closePopup();
-//        SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
-//        int exposure_visibility = exposure_seek_bar.getVisibility();
-//        SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
-//        int iso_visibility = iso_seek_bar.getVisibility();
-//        SeekBar exposure_time_seek_bar = ((SeekBar) findViewById(R.id.exposure_time_seekbar));
-//        int exposure_time_visibility = iso_seek_bar.getVisibility();
-//        boolean is_open = exposure_visibility == View.GONE || iso_visibility == View.GONE || exposure_time_visibility == View.GONE;
+        // SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
+        // int exposure_visibility = exposure_seek_bar.getVisibility();
+        // SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
+        // int iso_visibility = iso_seek_bar.getVisibility();
+        // SeekBar exposure_time_seek_bar = ((SeekBar)
+        // findViewById(R.id.exposure_time_seekbar));
+        // int exposure_time_visibility = iso_seek_bar.getVisibility();
+        // boolean is_open = exposure_visibility == View.GONE || iso_visibility ==
+        // View.GONE || exposure_time_visibility == View.GONE;
         //
-//        if (is_open) {
-//            clearSeekBar();
-//        } else if (preview.getCameraController() != null) {
-//            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//            String value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(), preview.getCameraController().getDefaultISO());
-//            if (preview.usingCamera2API() && !value.equals(preview.getCameraController().getDefaultISO())) {
-//                // with Camera2 API, when using non-default ISO we instead show sliders for ISO range and exposure time
-//                if (preview.supportsISORange()) {
-//                    iso_seek_bar.setVisibility(View.VISIBLE);
-//                    if (preview.supportsExposureTime()) {
-//                        exposure_time_seek_bar.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//            } else {
-//                if (preview.supportsExposures()) {
-//                    exposure_seek_bar.setVisibility(View.VISIBLE);
-//                    ZoomControls seek_bar_zoom = (ZoomControls) findViewById(R.id.exposure_seekbar_zoom);
-//                    seek_bar_zoom.setVisibility(View.VISIBLE);
-//                }
-//            }
-//        }
+        // if (is_open) {
+        // clearSeekBar();
+        // } else if (preview.getCameraController() != null) {
+        // SharedPreferences sharedPreferences =
+        // PreferenceManager.getDefaultSharedPreferences(this);
+        // String value =
+        // sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(),
+        // preview.getCameraController().getDefaultISO());
+        // if (preview.usingCamera2API() &&
+        // !value.equals(preview.getCameraController().getDefaultISO())) {
+        // // with Camera2 API, when using non-default ISO we instead show sliders for
+        // ISO range and exposure time
+        // if (preview.supportsISORange()) {
+        // iso_seek_bar.setVisibility(View.VISIBLE);
+        // if (preview.supportsExposureTime()) {
+        // exposure_time_seek_bar.setVisibility(View.VISIBLE);
+        // }
+        // }
+        // } else {
+        // if (preview.supportsExposures()) {
+        // exposure_seek_bar.setVisibility(View.VISIBLE);
+        // ZoomControls seek_bar_zoom = (ZoomControls)
+        // findViewById(R.id.exposure_seekbar_zoom);
+        // seek_bar_zoom.setVisibility(View.VISIBLE);
+        // }
+        // }
+        // }
     }
 
     private static double seekbarScaling(double frac) {
-        // For various seekbars, we want to use a non-linear scaling, so user has more control over smaller values
+        // For various seekbars, we want to use a non-linear scaling, so user has more
+        // control over smaller values
         double scaling = (Math.pow(100.0, frac) - 1.0) / 99.0;
         return scaling;
     }
@@ -1083,8 +1132,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             Log.d(TAG, "clickedExposureLock");
         this.preview.toggleExposureLock();
         ImageButton exposureLockButton = (ImageButton) findViewById(R.id.exposure_lock);
-        exposureLockButton.setImageResource(preview.isExposureLocked() ? R.drawable.exposure_locked : R.drawable.exposure_unlocked);
-        preview.showToast(exposure_lock_toast, preview.isExposureLocked() ? R.string.exposure_locked : R.string.exposure_unlocked);
+        exposureLockButton.setImageResource(
+                preview.isExposureLocked() ? R.drawable.exposure_locked : R.drawable.exposure_unlocked);
+        preview.showToast(exposure_lock_toast,
+                preview.isExposureLocked() ? R.string.exposure_locked : R.string.exposure_unlocked);
     }
 
     public void clickedSettings(View view) {
@@ -1140,7 +1191,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             Log.d(TAG, "open popup");
 
         clearSeekBar();
-        preview.cancelTimer(); // best to cancel any timer, in case we take a photo while settings window is open, or when changing settings
+        preview.cancelTimer(); // best to cancel any timer, in case we take a photo while settings window is
+                               // open, or when changing settings
 
         final long time_s = System.currentTimeMillis();
 
@@ -1154,32 +1206,34 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         popup_container.addView(popup_view);
 
         // need to call layoutUI to make sure the new popup is oriented correctly
-        // but need to do after the layout has been done, so we have a valid width/height to use
-        popup_container.getViewTreeObserver().addOnGlobalLayoutListener(
-                new OnGlobalLayoutListener() {
-                    @SuppressWarnings("deprecation")
-                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                    @Override
-                    public void onGlobalLayout() {
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "onGlobalLayout()");
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "time after global layout: " + (System.currentTimeMillis() - time_s));
-                        layoutUI();
-                        if (MyDebug.LOG)
-                            Log.d(TAG, "time after layoutUI: " + (System.currentTimeMillis() - time_s));
-                        // stop listening - only want to call this once!
-                        popup_container.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        // but need to do after the layout has been done, so we have a valid
+        // width/height to use
+        popup_container.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            @SuppressWarnings("deprecation")
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onGlobalLayout() {
+                if (MyDebug.LOG)
+                    Log.d(TAG, "onGlobalLayout()");
+                if (MyDebug.LOG)
+                    Log.d(TAG, "time after global layout: " + (System.currentTimeMillis() - time_s));
+                layoutUI();
+                if (MyDebug.LOG)
+                    Log.d(TAG, "time after layoutUI: " + (System.currentTimeMillis() - time_s));
+                // stop listening - only want to call this once!
+                popup_container.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BaseSpinnyCameraModuleActivity.this);
-                        String ui_placement = sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(), "ui_right");
-                        boolean ui_placement_right = ui_placement.equals("ui_right");
-                        ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 1.0f, Animation.RELATIVE_TO_SELF, ui_placement_right ? 0.0f : 1.0f);
-                        animation.setDuration(100);
-                        popup_container.setAnimation(animation);
-                    }
-                }
-        );
+                SharedPreferences sharedPreferences = PreferenceManager
+                        .getDefaultSharedPreferences(BaseSpinnyCameraModuleActivity.this);
+                String ui_placement = sharedPreferences.getString(PreferenceKeys.getUIPlacementPreferenceKey(),
+                        "ui_right");
+                boolean ui_placement_right = ui_placement.equals("ui_right");
+                ScaleAnimation animation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 1.0f,
+                        Animation.RELATIVE_TO_SELF, ui_placement_right ? 0.0f : 1.0f);
+                animation.setDuration(100);
+                popup_container.setAnimation(animation);
+            }
+        });
 
         if (MyDebug.LOG)
             Log.d(TAG, "time to create popup: " + (System.currentTimeMillis() - time_s));
@@ -1189,8 +1243,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "openSettings");
         closePopup();
-        preview.cancelTimer(); // best to cancel any timer, in case we take a photo while settings window is open, or when changing settings
-        preview.stopVideo(false); // important to stop video, as we'll be changing camera parameters when the settings window closes
+        preview.cancelTimer(); // best to cancel any timer, in case we take a photo while settings window is
+                               // open, or when changing settings
+        preview.stopVideo(false); // important to stop video, as we'll be changing camera parameters when the
+                                  // settings window closes
 
         Bundle bundle = new Bundle();
         bundle.putInt("cameraId", this.preview.getCameraId());
@@ -1284,10 +1340,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         putBundleExtra(bundle, "flash_values", this.preview.getSupportedFlashValues());
         putBundleExtra(bundle, "focus_values", this.preview.getSupportedFocusValues());
 
-//        setWindowFlagsForSettings();
+        // setWindowFlagsForSettings();
         MyPreferenceFragment fragment = new MyPreferenceFragment();
         fragment.setArguments(bundle);
-        getFragmentManager().beginTransaction().add(R.id.prefs_container, fragment, "PREFERENCE_FRAGMENT").addToBackStack(null).commit();
+        getFragmentManager().beginTransaction().add(R.id.prefs_container, fragment, "PREFERENCE_FRAGMENT")
+                .addToBackStack(null).commit();
     }
 
     public void updateForSettings() {
@@ -1305,8 +1362,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (preview.getCameraController() != null && preview.isVideo() && !preview.focusIsVideo()) {
             saved_focus_value = preview.getCurrentFocusValue(); // n.b., may still be null
             // make sure we're into continuous video mode
-            // workaround for bug on Samsung Galaxy S5 with UHD, where if the user switches to another (non-continuous-video) focus mode, then goes to Settings, then returns and records video, the preview freezes and the video is corrupted
-            // so to be safe, we always reset to continuous video mode, and then reset it afterwards
+            // workaround for bug on Samsung Galaxy S5 with UHD, where if the user switches
+            // to another (non-continuous-video) focus mode, then goes to Settings, then
+            // returns and records video, the preview freezes and the video is corrupted
+            // so to be safe, we always reset to continuous video mode, and then reset it
+            // afterwards
             preview.updateFocusForVideo(false);
         }
         if (MyDebug.LOG)
@@ -1314,8 +1374,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
         updateFolderHistory();
 
-        // update camera for changes made in prefs - do this without closing and reopening the camera app if possible for speed!
-        // but need workaround for Nexus 7 bug, where scene mode doesn't take effect unless the camera is restarted - I can reproduce this with other 3rd party camera apps, so may be a Nexus 7 issue...
+        // update camera for changes made in prefs - do this without closing and
+        // reopening the camera app if possible for speed!
+        // but need workaround for Nexus 7 bug, where scene mode doesn't take effect
+        // unless the camera is restarted - I can reproduce this with other 3rd party
+        // camera apps, so may be a Nexus 7 issue...
         boolean need_reopen = false;
         if (preview.getCameraController() != null) {
             String scene_mode = preview.getCameraController().getSceneMode();
@@ -1336,7 +1399,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         Log.d("Suvodip", "called location");
         if (toast_message != null)
             block_startup_toast = true;
-        if (need_reopen || preview.getCameraController() == null) { // if camera couldn't be opened before, might as well try again
+        if (need_reopen || preview.getCameraController() == null) { // if camera couldn't be opened before, might as
+                                                                    // well try again
             preview.onPause();
             preview.onResume();
         } else {
@@ -1356,7 +1420,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     }
 
     MyPreferenceFragment getPreferenceFragment() {
-        MyPreferenceFragment fragment = (MyPreferenceFragment) getFragmentManager().findFragmentByTag("PREFERENCE_FRAGMENT");
+        MyPreferenceFragment fragment = (MyPreferenceFragment) getFragmentManager()
+                .findFragmentByTag("PREFERENCE_FRAGMENT");
         return fragment;
     }
 
@@ -1370,7 +1435,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (fragment != null) {
             if (MyDebug.LOG)
                 Log.d(TAG, "close settings");
-//            setWindowFlagsForCamera();
+            // setWindowFlagsForCamera();
             updateForSettings();
         } else {
             if (popupIsOpen()) {
@@ -1383,7 +1448,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
     boolean usingKitKatImmersiveMode() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String immersive_mode = sharedPreferences.getString(PreferenceKeys.getImmersiveModePreferenceKey(), "immersive_mode_low_profile");
+        String immersive_mode = sharedPreferences.getString(PreferenceKeys.getImmersiveModePreferenceKey(),
+                "immersive_mode_low_profile");
         if (immersive_mode.equals("immersive_mode_gui") || immersive_mode.equals("immersive_mode_everything"))
             return true;
         return false;
@@ -1424,10 +1490,13 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         // n.b., preview.setImmersiveMode() is called from onSystemUiVisibilityChange()
         if (on) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && usingKitKatImmersiveMode()) {
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                getWindow().getDecorView()
+                        .setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
             } else {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                String immersive_mode = sharedPreferences.getString(PreferenceKeys.getImmersiveModePreferenceKey(), "immersive_mode_low_profile");
+                String immersive_mode = sharedPreferences.getString(PreferenceKeys.getImmersiveModePreferenceKey(),
+                        "immersive_mode_low_profile");
                 if (immersive_mode.equals("immersive_mode_low_profile"))
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
                 else
@@ -1443,7 +1512,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // keep screen active - see http://stackoverflow.com/questions/2131948/force-screen-on
+        // keep screen active - see
+        // http://stackoverflow.com/questions/2131948/force-screen-on
         if (sharedPreferences.getBoolean(PreferenceKeys.getKeepDisplayOnPreferenceKey(), true)) {
             if (MyDebug.LOG)
                 Log.d(TAG, "do keep screen on");
@@ -1456,14 +1526,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (sharedPreferences.getBoolean(PreferenceKeys.getShowWhenLockedPreferenceKey(), true)) {
             if (MyDebug.LOG)
                 Log.d(TAG, "do show when locked");
-            // keep Open Camera on top of screen-lock (will still need to unlock when going to gallery or settings)
+            // keep Open Camera on top of screen-lock (will still need to unlock when going
+            // to gallery or settings)
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         } else {
             if (MyDebug.LOG)
                 Log.d(TAG, "don't show when locked");
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
-
 
         initImmersiveMode();
         camera_in_background = false;
@@ -1503,8 +1573,9 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         int top = galleryButton.getPaddingTop();
         int right = galleryButton.getPaddingRight();
         int left = galleryButton.getPaddingLeft();
-        /*if( MyDebug.LOG )
-            Log.d(TAG, "padding: " + bottom);*/
+        /*
+         * if( MyDebug.LOG ) Log.d(TAG, "padding: " + bottom);
+         */
         galleryButton.setImageBitmap(null);
         galleryButton.setImageResource(R.drawable.gallery);
         // workaround for setImageResource also resetting padding, Android bug
@@ -1527,11 +1598,14 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         StorageUtils.Media media = applicationInterface.getStorageUtils().getLatestMedia();
         Bitmap thumbnail = null;
         if (media != null && getContentResolver() != null) {
-            // check for getContentResolver() != null, as have had reported Google Play crashes
+            // check for getContentResolver() != null, as have had reported Google Play
+            // crashes
             if (media.video) {
-                thumbnail = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), media.id, MediaStore.Video.Thumbnails.MINI_KIND, null);
+                thumbnail = MediaStore.Video.Thumbnails.getThumbnail(getContentResolver(), media.id,
+                        MediaStore.Video.Thumbnails.MINI_KIND, null);
             } else {
-                thumbnail = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), media.id, MediaStore.Images.Thumbnails.MINI_KIND, null);
+                thumbnail = MediaStore.Images.Thumbnails.getThumbnail(getContentResolver(), media.id,
+                        MediaStore.Images.Thumbnails.MINI_KIND, null);
             }
             if (thumbnail != null) {
                 if (media.orientation != 0) {
@@ -1540,7 +1614,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                     Matrix matrix = new Matrix();
                     matrix.setRotate(media.orientation, thumbnail.getWidth() * 0.5f, thumbnail.getHeight() * 0.5f);
                     try {
-                        Bitmap rotated_thumbnail = Bitmap.createBitmap(thumbnail, 0, 0, thumbnail.getWidth(), thumbnail.getHeight(), matrix, true);
+                        Bitmap rotated_thumbnail = Bitmap.createBitmap(thumbnail, 0, 0, thumbnail.getWidth(),
+                                thumbnail.getHeight(), matrix, true);
                         // careful, as rotated_thumbnail is sometimes not a copy!
                         if (rotated_thumbnail != thumbnail) {
                             thumbnail.recycle();
@@ -1553,7 +1628,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 }
             }
         }
-        // since we're now setting the thumbnail to the latest media on disk, we need to make sure clicking the Gallery goes to this
+        // since we're now setting the thumbnail to the latest media on disk, we need to
+        // make sure clicking the Gallery goes to this
         applicationInterface.getStorageUtils().clearLastMediaScanned();
         if (thumbnail != null) {
             if (MyDebug.LOG)
@@ -1571,7 +1647,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
     public void clickedGallery(View view) {
         if (MyDebug.LOG)
             Log.d(TAG, "clickedGallery");
-        //Intent intent = new Intent(Intent.ACTION_VIEW, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // Intent intent = new Intent(Intent.ACTION_VIEW,
+        // MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         Uri uri = applicationInterface.getStorageUtils().getLastMediaScanned();
         if (uri == null) {
             if (MyDebug.LOG)
@@ -1605,7 +1682,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         }
         if (!is_test) {
-            // don't do if testing, as unclear how to exit activity to finish test (for testGallery())
+            // don't do if testing, as unclear how to exit activity to finish test (for
+            // testGallery())
             if (MyDebug.LOG)
                 Log.d(TAG, "launch uri:" + uri);
             final String REVIEW_ACTION = "com.android.camera.action.REVIEW";
@@ -1617,8 +1695,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 if (MyDebug.LOG)
                     Log.d(TAG, "REVIEW_ACTION intent didn't work, try ACTION_VIEW");
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                // from http://stackoverflow.com/questions/11073832/no-activity-found-to-handle-intent - needed to fix crash if no gallery app installed
-                //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("blah")); // test
+                // from
+                // http://stackoverflow.com/questions/11073832/no-activity-found-to-handle-intent
+                // - needed to fix crash if no gallery app installed
+                // Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("blah")); // test
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     this.startActivity(intent);
                 } else {
@@ -1685,8 +1765,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (MyDebug.LOG)
             Log.d(TAG, "openFolderChooserDialogSAF");
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        //Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        //intent.addCategory(Intent.CATEGORY_OPENABLE);
+        // Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        // intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent, 42);
     }
 
@@ -1698,12 +1778,13 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             Uri treeUri = resultData.getData();
             if (MyDebug.LOG)
                 Log.d(TAG, "returned treeUri: " + treeUri);
-            // from https://developer.android.com/guide/topics/providers/document-provider.html#permissions :
+            // from
+            // https://developer.android.com/guide/topics/providers/document-provider.html#permissions
+            // :
             final int takeFlags = resultData.getFlags()
-                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             // Check for the freshest data.
-            getContentResolver().takePersistableUriPermission(treeUri,  takeFlags);
+            getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(PreferenceKeys.getSaveLocationSAFPreferenceKey(), treeUri.toString());
@@ -1715,7 +1796,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         } else if (requestCode == 42) {
             if (MyDebug.LOG)
                 Log.d(TAG, "SAF dialog cancelled");
-            // cancelled - if the user had yet to set a save location, make sure we switch SAF back off
+            // cancelled - if the user had yet to set a save location, make sure we switch
+            // SAF back off
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             String uri = sharedPreferences.getString(PreferenceKeys.getSaveLocationSAFPreferenceKey(), "");
             if (uri.length() == 0) {
@@ -1767,8 +1849,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                     if (MyDebug.LOG)
                         Log.d(TAG, "selected clear save history");
                     new AlertDialog.Builder(BaseSpinnyCameraModuleActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle(R.string.clear_folder_history)
+                            .setIcon(android.R.drawable.ic_dialog_alert).setTitle(R.string.clear_folder_history)
                             .setMessage(R.string.clear_folder_history_question)
                             .setPositiveButton(R.string.answer_yes, new DialogInterface.OnClickListener() {
                                 @Override
@@ -1776,29 +1857,26 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                                     if (MyDebug.LOG)
                                         Log.d(TAG, "confirmed clear save history");
                                     clearFolderHistory();
-//                                    setWindowFlagsForCamera();
+                                    // setWindowFlagsForCamera();
                                     showPreview(true);
                                 }
-                            })
-                            .setNegativeButton(R.string.answer_no, new DialogInterface.OnClickListener() {
+                            }).setNegativeButton(R.string.answer_no, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     if (MyDebug.LOG)
                                         Log.d(TAG, "don't clear save history");
-//                                    setWindowFlagsForCamera();
+                                    // setWindowFlagsForCamera();
                                     showPreview(true);
                                 }
-                            })
-                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            }).setOnCancelListener(new DialogInterface.OnCancelListener() {
                                 @Override
                                 public void onCancel(DialogInterface arg0) {
                                     if (MyDebug.LOG)
                                         Log.d(TAG, "cancelled clear save history");
-//                                    setWindowFlagsForCamera();
+                                    // setWindowFlagsForCamera();
                                     showPreview(true);
                                 }
-                            })
-                            .show();
+                            }).show();
                 } else if (which == new_index) {
                     if (MyDebug.LOG)
                         Log.d(TAG, "selected choose new folder");
@@ -1810,14 +1888,16 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                         String save_folder = save_location_history.get(save_location_history.size() - 1 - which);
                         if (MyDebug.LOG)
                             Log.d(TAG, "changed save_folder from history to: " + save_folder);
-                        preview.showToast(null, getResources().getString(R.string.changed_save_location) + "\n" + save_folder);
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(BaseSpinnyCameraModuleActivity.this);
+                        preview.showToast(null,
+                                getResources().getString(R.string.changed_save_location) + "\n" + save_folder);
+                        SharedPreferences sharedPreferences = PreferenceManager
+                                .getDefaultSharedPreferences(BaseSpinnyCameraModuleActivity.this);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString(PreferenceKeys.getSaveLocationPreferenceKey(), save_folder);
                         editor.apply();
                         updateFolderHistory(); // to move new selection to most recent
                     }
-//                    setWindowFlagsForCamera();
+                    // setWindowFlagsForCamera();
                     showPreview(true);
                 }
             }
@@ -1825,12 +1905,12 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface arg0) {
-//                setWindowFlagsForCamera();
+                // setWindowFlagsForCamera();
                 showPreview(true);
             }
         });
         alertDialog.show();
-        //getWindow().setLayout(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+        // getWindow().setLayout(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
         setWindowFlagsForSettings();
     }
 
@@ -1871,7 +1951,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             @Override
             public boolean onTouch(View arg0, MotionEvent event) {
                 return gestureDetector.onTouchEvent(event);
-                //return true;
+                // return true;
             }
         });
         screen_is_locked = true;
@@ -1893,7 +1973,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 if (MyDebug.LOG)
                     Log.d(TAG, "from " + e1.getX() + " , " + e1.getY() + " to " + e2.getX() + " , " + e2.getY());
                 final ViewConfiguration vc = ViewConfiguration.get(BaseSpinnyCameraModuleActivity.this);
-                //final int swipeMinDistance = 4*vc.getScaledPagingTouchSlop();
+                // final int swipeMinDistance = 4*vc.getScaledPagingTouchSlop();
                 final float scale = getResources().getDisplayMetrics().density;
                 final int swipeMinDistance = (int) (160 * scale + 0.5f); // convert dps to pixels
                 final int swipeThresholdVelocity = vc.getScaledMinimumFlingVelocity();
@@ -1905,7 +1985,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 float ydist = e1.getY() - e2.getY();
                 float dist2 = xdist * xdist + ydist * ydist;
                 float vel2 = velocityX * velocityX + velocityY * velocityY;
-                if (dist2 > swipeMinDistance * swipeMinDistance && vel2 > swipeThresholdVelocity * swipeThresholdVelocity) {
+                if (dist2 > swipeMinDistance * swipeMinDistance
+                        && vel2 > swipeThresholdVelocity * swipeThresholdVelocity) {
                     preview.showToast(screen_locked_toast, R.string.unlocked);
                     unlockScreen();
                 }
@@ -1938,7 +2019,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         if (preview.getCameraController() == null)
             return false;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String iso_value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(), preview.getCameraController().getDefaultISO());
+        String iso_value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(),
+                preview.getCameraController().getDefaultISO());
         boolean manual_iso = !iso_value.equals(preview.getCameraController().getDefaultISO());
         boolean supports_exposure = preview.supportsExposures() || (manual_iso && preview.supportsISORange());
         return supports_exposure;
@@ -1966,8 +2048,11 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             if (MyDebug.LOG)
                 Log.d(TAG, "set up manual focus");
             SeekBar focusSeekBar = (SeekBar) findViewById(R.id.focus_seekbar);
-            focusSeekBar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-            setProgressSeekbarScaled(focusSeekBar, 0.0, preview.getMinimumFocusDistance(), preview.getCameraController().getFocusDistance());
+            focusSeekBar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the
+                                                           // listener when setting up the progress bar to match the
+                                                           // existing state
+            setProgressSeekbarScaled(focusSeekBar, 0.0, preview.getMinimumFocusDistance(),
+                    preview.getCameraController().getFocusDistance());
             focusSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -1985,131 +2070,156 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
-            final int visibility = preview.getCurrentFocusValue() != null && this.getPreview().getCurrentFocusValue().equals("focus_mode_manual2") ? View.VISIBLE : View.INVISIBLE;
+            final int visibility = preview.getCurrentFocusValue() != null
+                    && this.getPreview().getCurrentFocusValue().equals("focus_mode_manual2") ? View.VISIBLE
+                            : View.INVISIBLE;
             focusSeekBar.setVisibility(visibility);
         }
-//        {
-//            if (preview.supportsISORange()) {
-//                if (MyDebug.LOG)
-//                    Log.d(TAG, "set up iso");
-//                SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
-//                iso_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-//                setProgressSeekbarScaled(iso_seek_bar, preview.getMinimumISO(), preview.getMaximumISO(), preview.getCameraController().getISO());
-//                iso_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-//                    @Override
-//                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                        if (MyDebug.LOG)
-//                            Log.d(TAG, "iso seekbar onProgressChanged: " + progress);
-//                        double frac = progress / (double) 100.0;
-//                        if (MyDebug.LOG)
-//                            Log.d(TAG, "exposure_time frac: " + frac);
-//                        double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
-//                        if (MyDebug.LOG)
-//                            Log.d(TAG, "exposure_time scaling: " + scaling);
-//                        int min_iso = preview.getMinimumISO();
-//                        int max_iso = preview.getMaximumISO();
-//                        int iso = min_iso + (int) (scaling * (max_iso - min_iso));
-//                        preview.setISO(iso);
-//                    }
-//
-//                    @Override
-//                    public void onStartTrackingTouch(SeekBar seekBar) {
-//                    }
-//
-//                    @Override
-//                    public void onStopTrackingTouch(SeekBar seekBar) {
-//                    }
-//                });
-//                if (preview.supportsExposureTime()) {
-//                    if (MyDebug.LOG)
-//                        Log.d(TAG, "set up exposure time");
-//                    SeekBar exposure_time_seek_bar = ((SeekBar) findViewById(R.id.exposure_time_seekbar));
-//                    exposure_time_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-//                    setProgressSeekbarScaled(exposure_time_seek_bar, preview.getMinimumExposureTime(), preview.getMaximumExposureTime(), preview.getCameraController().getExposureTime());
-//                    exposure_time_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-//                        @Override
-//                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                            if (MyDebug.LOG)
-//                                Log.d(TAG, "exposure_time seekbar onProgressChanged: " + progress);
-//                            double frac = progress / (double) 100.0;
-//                            if (MyDebug.LOG)
-//                                Log.d(TAG, "exposure_time frac: " + frac);
-//                            //long exposure_time = min_exposure_time + (long)(frac * (max_exposure_time - min_exposure_time));
-//                            //double exposure_time_r = min_exposure_time_r + (frac * (max_exposure_time_r - min_exposure_time_r));
-//                            //long exposure_time = (long)(1.0 / exposure_time_r);
-//                            // we use the formula: [100^(percent/100) - 1]/99.0 rather than a simple linear scaling
-//                            double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
-//                            if (MyDebug.LOG)
-//                                Log.d(TAG, "exposure_time scaling: " + scaling);
-//                            long min_exposure_time = preview.getMinimumExposureTime();
-//                            long max_exposure_time = preview.getMaximumExposureTime();
-//                            long exposure_time = min_exposure_time + (long) (scaling * (max_exposure_time - min_exposure_time));
-//                            preview.setExposureTime(exposure_time);
-//                        }
-//
-//                        @Override
-//                        public void onStartTrackingTouch(SeekBar seekBar) {
-//                        }
-//
-//                        @Override
-//                        public void onStopTrackingTouch(SeekBar seekBar) {
-//                        }
-//                    });
-//                }
-//            }
-//        }
-//        {
-//            if (preview.supportsExposures()) {
-//                if (MyDebug.LOG)
-//                    Log.d(TAG, "set up exposure compensation");
-//                final int min_exposure = preview.getMinimumExposure();
-//                SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
-//                exposure_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener - don't want to call the listener when setting up the progress bar to match the existing state
-//                exposure_seek_bar.setMax(preview.getMaximumExposure() - min_exposure);
-//                exposure_seek_bar.setProgress(preview.getCurrentExposure() - min_exposure);
-//                exposure_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-//                    @Override
-//                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                        if (MyDebug.LOG)
-//                            Log.d(TAG, "exposure seekbar onProgressChanged: " + progress);
-//                        preview.setExposure(min_exposure + progress);
-//                    }
-//
-//                    @Override
-//                    public void onStartTrackingTouch(SeekBar seekBar) {
-//                    }
-//
-//                    @Override
-//                    public void onStopTrackingTouch(SeekBar seekBar) {
-//                    }
-//                });
-//
-//                ZoomControls seek_bar_zoom = (ZoomControls) findViewById(R.id.exposure_seekbar_zoom);
-//                seek_bar_zoom.setOnZoomInClickListener(new View.OnClickListener() {
-//                    public void onClick(View v) {
-//                        changeExposure(1);
-//                    }
-//                });
-//                seek_bar_zoom.setOnZoomOutClickListener(new View.OnClickListener() {
-//                    public void onClick(View v) {
-//                        changeExposure(-1);
-//                    }
-//                });
-//            }
-//        }
+        // {
+        // if (preview.supportsISORange()) {
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "set up iso");
+        // SeekBar iso_seek_bar = ((SeekBar) findViewById(R.id.iso_seekbar));
+        // iso_seek_bar.setOnSeekBarChangeListener(null); // clear an existing listener
+        // - don't want to call the listener when setting up the progress bar to match
+        // the existing state
+        // setProgressSeekbarScaled(iso_seek_bar, preview.getMinimumISO(),
+        // preview.getMaximumISO(), preview.getCameraController().getISO());
+        // iso_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        // @Override
+        // public void onProgressChanged(SeekBar seekBar, int progress, boolean
+        // fromUser) {
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "iso seekbar onProgressChanged: " + progress);
+        // double frac = progress / (double) 100.0;
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "exposure_time frac: " + frac);
+        // double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "exposure_time scaling: " + scaling);
+        // int min_iso = preview.getMinimumISO();
+        // int max_iso = preview.getMaximumISO();
+        // int iso = min_iso + (int) (scaling * (max_iso - min_iso));
+        // preview.setISO(iso);
+        // }
+        //
+        // @Override
+        // public void onStartTrackingTouch(SeekBar seekBar) {
+        // }
+        //
+        // @Override
+        // public void onStopTrackingTouch(SeekBar seekBar) {
+        // }
+        // });
+        // if (preview.supportsExposureTime()) {
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "set up exposure time");
+        // SeekBar exposure_time_seek_bar = ((SeekBar)
+        // findViewById(R.id.exposure_time_seekbar));
+        // exposure_time_seek_bar.setOnSeekBarChangeListener(null); // clear an existing
+        // listener - don't want to call the listener when setting up the progress bar
+        // to match the existing state
+        // setProgressSeekbarScaled(exposure_time_seek_bar,
+        // preview.getMinimumExposureTime(), preview.getMaximumExposureTime(),
+        // preview.getCameraController().getExposureTime());
+        // exposure_time_seek_bar.setOnSeekBarChangeListener(new
+        // OnSeekBarChangeListener() {
+        // @Override
+        // public void onProgressChanged(SeekBar seekBar, int progress, boolean
+        // fromUser) {
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "exposure_time seekbar onProgressChanged: " + progress);
+        // double frac = progress / (double) 100.0;
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "exposure_time frac: " + frac);
+        // //long exposure_time = min_exposure_time + (long)(frac * (max_exposure_time -
+        // min_exposure_time));
+        // //double exposure_time_r = min_exposure_time_r + (frac * (max_exposure_time_r
+        // - min_exposure_time_r));
+        // //long exposure_time = (long)(1.0 / exposure_time_r);
+        // // we use the formula: [100^(percent/100) - 1]/99.0 rather than a simple
+        // linear scaling
+        // double scaling = BaseSpinnyCameraModuleActivity.seekbarScaling(frac);
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "exposure_time scaling: " + scaling);
+        // long min_exposure_time = preview.getMinimumExposureTime();
+        // long max_exposure_time = preview.getMaximumExposureTime();
+        // long exposure_time = min_exposure_time + (long) (scaling * (max_exposure_time
+        // - min_exposure_time));
+        // preview.setExposureTime(exposure_time);
+        // }
+        //
+        // @Override
+        // public void onStartTrackingTouch(SeekBar seekBar) {
+        // }
+        //
+        // @Override
+        // public void onStopTrackingTouch(SeekBar seekBar) {
+        // }
+        // });
+        // }
+        // }
+        // }
+        // {
+        // if (preview.supportsExposures()) {
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "set up exposure compensation");
+        // final int min_exposure = preview.getMinimumExposure();
+        // SeekBar exposure_seek_bar = ((SeekBar) findViewById(R.id.exposure_seekbar));
+        // exposure_seek_bar.setOnSeekBarChangeListener(null); // clear an existing
+        // listener - don't want to call the listener when setting up the progress bar
+        // to match the existing state
+        // exposure_seek_bar.setMax(preview.getMaximumExposure() - min_exposure);
+        // exposure_seek_bar.setProgress(preview.getCurrentExposure() - min_exposure);
+        // exposure_seek_bar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        // @Override
+        // public void onProgressChanged(SeekBar seekBar, int progress, boolean
+        // fromUser) {
+        // if (MyDebug.LOG)
+        // Log.d(TAG, "exposure seekbar onProgressChanged: " + progress);
+        // preview.setExposure(min_exposure + progress);
+        // }
+        //
+        // @Override
+        // public void onStartTrackingTouch(SeekBar seekBar) {
+        // }
+        //
+        // @Override
+        // public void onStopTrackingTouch(SeekBar seekBar) {
+        // }
+        // });
+        //
+        // ZoomControls seek_bar_zoom = (ZoomControls)
+        // findViewById(R.id.exposure_seekbar_zoom);
+        // seek_bar_zoom.setOnZoomInClickListener(new View.OnClickListener() {
+        // public void onClick(View v) {
+        // changeExposure(1);
+        // }
+        // });
+        // seek_bar_zoom.setOnZoomOutClickListener(new View.OnClickListener() {
+        // public void onClick(View v) {
+        // changeExposure(-1);
+        // }
+        // });
+        // }
+        // }
 
         View exposureButton = (View) findViewById(R.id.exposure);
         exposureButton.setVisibility(View.GONE);
-//        exposureButton.setVisibility(supportsExposureButton() && !applicationInterface.inImmersiveMode() ? View.VISIBLE : View.GONE);
+        // exposureButton.setVisibility(supportsExposureButton() &&
+        // !applicationInterface.inImmersiveMode() ? View.VISIBLE : View.GONE);
 
         ImageButton exposureLockButton = (ImageButton) findViewById(R.id.exposure_lock);
         exposureLockButton.setVisibility(View.GONE);
-//        exposureLockButton.setVisibility(preview.supportsExposureLock() && !applicationInterface.inImmersiveMode() ? View.VISIBLE : View.GONE);
+        // exposureLockButton.setVisibility(preview.supportsExposureLock() &&
+        // !applicationInterface.inImmersiveMode() ? View.VISIBLE : View.GONE);
         if (preview.supportsExposureLock()) {
-            exposureLockButton.setImageResource(preview.isExposureLocked() ? R.drawable.exposure_locked : R.drawable.exposure_unlocked);
+            exposureLockButton.setImageResource(
+                    preview.isExposureLocked() ? R.drawable.exposure_locked : R.drawable.exposure_unlocked);
         }
 
-        setPopupIcon(); // needed so that the icon is set right even if no flash mode is set when starting up camera (e.g., switching to front camera with no flash)
+        setPopupIcon(); // needed so that the icon is set right even if no flash mode is set when
+                        // starting up camera (e.g., switching to front camera with no flash)
 
         setTakePhotoIcon();
 
@@ -2146,9 +2256,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             long blocks = statFs.getAvailableBlocks();
             long size = statFs.getBlockSize();
             long free = (blocks * size) / 1048576;
-            /*if( MyDebug.LOG ) {
-                Log.d(TAG, "freeMemory blocks: " + blocks + " size: " + size + " free: " + free);
-			}*/
+            /*
+             * if( MyDebug.LOG ) { Log.d(TAG, "freeMemory blocks: " + blocks + " size: " +
+             * size + " free: " + free); }
+             */
             return free;
         } catch (IllegalArgumentException e) {
             // this can happen if folder doesn't exist, or don't have read access
@@ -2162,9 +2273,10 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                     long blocks = statFs.getAvailableBlocks();
                     long size = statFs.getBlockSize();
                     long free = (blocks * size) / 1048576;
-                    /*if( MyDebug.LOG ) {
-                        Log.d(TAG, "freeMemory blocks: " + blocks + " size: " + size + " free: " + free);
-        			}*/
+                    /*
+                     * if( MyDebug.LOG ) { Log.d(TAG, "freeMemory blocks: " + blocks + " size: " +
+                     * size + " free: " + free); }
+                     */
                     return free;
                 }
             } catch (IllegalArgumentException e2) {
@@ -2213,7 +2325,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 bitrate_string = profile.videoBitRate + "bps";
 
             String timer_value = sharedPreferences.getString(PreferenceKeys.getVideoMaxDurationPreferenceKey(), "0");
-            toast_string = getResources().getString(R.string.video) + ": " + profile.videoFrameWidth + "x" + profile.videoFrameHeight + ", " + profile.videoFrameRate + "fps, " + bitrate_string;
+            toast_string = getResources().getString(R.string.video) + ": " + profile.videoFrameWidth + "x"
+                    + profile.videoFrameHeight + ", " + profile.videoFrameRate + "fps, " + bitrate_string;
             boolean record_audio = sharedPreferences.getBoolean(PreferenceKeys.getRecordAudioPreferenceKey(), true);
             if (!record_audio) {
                 toast_string += "\n" + getResources().getString(R.string.audio_disabled);
@@ -2227,7 +2340,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                     toast_string += "\n" + getResources().getString(R.string.max_duration) + ": " + entry;
                 }
             }
-            if (sharedPreferences.getBoolean(PreferenceKeys.getVideoFlashPreferenceKey(), false) && preview.supportsFlash()) {
+            if (sharedPreferences.getBoolean(PreferenceKeys.getVideoFlashPreferenceKey(), false)
+                    && preview.supportsFlash()) {
                 toast_string += "\n" + getResources().getString(R.string.preference_video_flash);
             }
         } else {
@@ -2244,11 +2358,13 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
                 }
             }
         }
-        String iso_value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(), camera_controller.getDefaultISO());
+        String iso_value = sharedPreferences.getString(PreferenceKeys.getISOPreferenceKey(),
+                camera_controller.getDefaultISO());
         if (!iso_value.equals(camera_controller.getDefaultISO())) {
             toast_string += "\nISO: " + iso_value;
             if (preview.supportsExposureTime()) {
-                long exposure_time_value = sharedPreferences.getLong(PreferenceKeys.getExposureTimePreferenceKey(), camera_controller.getDefaultExposureTime());
+                long exposure_time_value = sharedPreferences.getLong(PreferenceKeys.getExposureTimePreferenceKey(),
+                        camera_controller.getDefaultExposureTime());
                 toast_string += " " + preview.getExposureTimeString(exposure_time_value);
             }
         }
@@ -2326,12 +2442,8 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AudioAttributes audio_attributes = new AudioAttributes.Builder()
                         .setLegacyStreamType(AudioManager.STREAM_SYSTEM)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build();
-                sound_pool = new SoundPool.Builder()
-                        .setMaxStreams(1)
-                        .setAudioAttributes(audio_attributes)
-                        .build();
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build();
+                sound_pool = new SoundPool.Builder().setMaxStreams(1).setAudioAttributes(audio_attributes).build();
             } else {
                 sound_pool = new SoundPool(1, AudioManager.STREAM_SYSTEM, 0);
             }
