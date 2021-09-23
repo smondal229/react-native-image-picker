@@ -76,7 +76,7 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         dialog = new Dialog(this);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         // Set dialog view
-        dialog.setContentView(R.layout.view_photo_preview);
+        dialog.setContentView(R.layout.display_preview);
 
         ImageView imageView = (ImageView) dialog.findViewById(R.id.imv_photo_preview);
         imageView.setImageBitmap(capturedData);
