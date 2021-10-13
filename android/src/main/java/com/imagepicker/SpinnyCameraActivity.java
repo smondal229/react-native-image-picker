@@ -46,10 +46,15 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         orientationEventListener = new OrientationEventListener(this) {
             @Override
             public void onOrientationChanged(int orientation) {
-                current_orientation = orientation;
-                if(capturedData != null && dialog != null) {
-                    dialog.dismiss();
-                    showImagePreviewDialog(null);
+                if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN)
+                    return;
+
+                if (Math.abs(orientation - current_orientation) > 45) {
+                    current_orientation = orientation;
+                    if(capturedData != null && dialog != null) {
+                        dialog.dismiss();
+                        showImagePreviewDialog(null);
+                    }
                 }
             }
         };
@@ -85,25 +90,25 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) buttonContainer.getLayoutParams();
         int parent_pos = 0;
 
-        if (current_orientation == 0) {
+        if ((current_orientation > 315 && current_orientation < 360) || (current_orientation >= 0 && current_orientation <= 45)) {
             parent_pos = RelativeLayout.ALIGN_BOTTOM;
-        } else if (current_orientation == 90) {
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            buttonContainer.setRotation(0);
+        } else if (current_orientation > 45 && current_orientation <= 135) {
             parent_pos = RelativeLayout.ALIGN_RIGHT;
-        } else if (current_orientation == 180) {
+            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+            buttonContainer.setRotation(270);
+        } else if (current_orientation > 135 && current_orientation <= 225) {
             parent_pos = RelativeLayout.ALIGN_TOP;
-        } else if (current_orientation == 270) {
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            buttonContainer.setRotation(180);
+        } else if (current_orientation > 225 && current_orientation <= 315) {
             parent_pos = RelativeLayout.ALIGN_LEFT;
+            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+            buttonContainer.setRotation(90);
         }
 
         layoutParams.addRule(parent_pos, R.id.imv_photo_preview);
-
-        if (current_orientation % 180 != 0) {
-            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-            buttonContainer.setRotation(current_orientation + 180);
-        } else {
-            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-            buttonContainer.setRotation(current_orientation);
-        }
 
         buttonContainer.setLayoutParams(layoutParams);
 
