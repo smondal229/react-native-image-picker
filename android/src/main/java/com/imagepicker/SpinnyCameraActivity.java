@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.OrientationEventListener;
+import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,12 +49,18 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
             public void onOrientationChanged(int orientation) {
                 if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN)
                     return;
-
-                if (Math.abs(orientation - current_orientation) > 45) {
-                    current_orientation = orientation;
-                    if(capturedData != null && dialog != null) {
-                        dialog.dismiss();
-                        showImagePreviewDialog(null);
+                int diff = Math.abs(orientation - current_orientation);
+                if (diff > 180)
+                    diff = 360 - diff;
+                // only change orientation when sufficiently changed
+                if (diff > 60) {
+                    orientation = (orientation + 45) / 90 * 90;
+                    orientation = orientation % 360;
+                    if (orientation != current_orientation) {
+                        current_orientation = orientation;
+                        if (dialog != null) {
+//                            rotateButtons();
+                        }
                     }
                 }
             }
@@ -69,13 +76,10 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
 
     // Show photo preview
     private void showImagePreviewDialog(@Nullable final byte[] bitmapData) {
-        if (capturedData == null) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
-            Matrix mat = new Matrix();
-            mat.postRotate(90);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
-            capturedData = bitmap;
-        }
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
+        Matrix mat = new Matrix();
+        mat.postRotate(90);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
 
         // Create bitmap from data
         dialog = new Dialog(this);
@@ -84,33 +88,8 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         dialog.setContentView(R.layout.display_preview);
 
         ImageView imageView = (ImageView) dialog.findViewById(R.id.imv_photo_preview);
-        imageView.setImageBitmap(capturedData);
-
-        LinearLayout buttonContainer = dialog.findViewById(R.id.button_container);
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) buttonContainer.getLayoutParams();
-        int parent_pos = 0;
-
-        if ((current_orientation > 315 && current_orientation < 360) || (current_orientation >= 0 && current_orientation <= 45)) {
-            parent_pos = RelativeLayout.ALIGN_BOTTOM;
-            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-            buttonContainer.setRotation(0);
-        } else if (current_orientation > 45 && current_orientation <= 135) {
-            parent_pos = RelativeLayout.ALIGN_RIGHT;
-            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-            buttonContainer.setRotation(270);
-        } else if (current_orientation > 135 && current_orientation <= 225) {
-            parent_pos = RelativeLayout.ALIGN_TOP;
-            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-            buttonContainer.setRotation(180);
-        } else if (current_orientation > 225 && current_orientation <= 315) {
-            parent_pos = RelativeLayout.ALIGN_LEFT;
-            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-            buttonContainer.setRotation(90);
-        }
-
-        layoutParams.addRule(parent_pos, R.id.imv_photo_preview);
-
-        buttonContainer.setLayoutParams(layoutParams);
+        imageView.setImageBitmap(bitmap);
+        rotateButtons();
 
         // Ok button listener
         Button btn_ok = (Button) dialog.findViewById(R.id.btn_ok_photo_dialog);
@@ -139,9 +118,55 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
                 dismissDialog();
             }
         });
-
         // Show dialog
         dialog.show();
+    }
+
+    private void rotateButtons() {
+        LinearLayout buttonContainer = dialog.findViewById(R.id.button_container);
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) buttonContainer.getLayoutParams();
+        int parent_pos = 0;
+        int rotation = this.getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+        // getRotation is anti-clockwise, but current_orientation is clockwise, so we
+        // add rather than subtract
+        // relative_orientation is clockwise from landscape-left
+        // int relative_orientation = (current_orientation + 360 - degrees) % 360;
+        int relative_orientation = (current_orientation + degrees) % 360;
+        int ui_rotation = (360 - relative_orientation) % 360;
+
+        if (ui_rotation == 0) {
+            parent_pos = RelativeLayout.ALIGN_BOTTOM;
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        } else if (ui_rotation == 90) {
+            parent_pos = RelativeLayout.ALIGN_LEFT;
+            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+        } else if (ui_rotation == 180) {
+            parent_pos = RelativeLayout.ALIGN_TOP;
+            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        } else if (ui_rotation == 270) {
+            parent_pos = RelativeLayout.ALIGN_RIGHT;
+            layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+        }
+
+        buttonContainer.setRotation(ui_rotation);
+        layoutParams.addRule(parent_pos, R.id.imv_photo_preview);
+        buttonContainer.setLayoutParams(layoutParams);
+        buttonContainer.bringToFront();
     }
 
     /**
@@ -160,7 +185,7 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
     private void dismissDialog() {
         dialog.dismiss();
         dialog = null;
-        capturedData = null;
+//        capturedData = null;
     }
     /**
      * Method to generate file name.

@@ -739,24 +739,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
             view.setLayoutParams(layoutParams);
             view.setRotation(ui_rotation);
 
-            // view = findViewById(R.id.gallery);
-            // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            // layoutParams.addRule(align_parent_bottom, 0);
-            // layoutParams.addRule(left_of, R.id.settings);
-            // layoutParams.addRule(right_of, 0);
-            // view.setLayoutParams(layoutParams);
-            // view.setRotation(ui_rotation);
-            //
-            // view = findViewById(R.id.popup);
-            // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-            // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
-            // layoutParams.addRule(align_parent_bottom, 0);
-            // layoutParams.addRule(left_of, R.id.gallery);
-            // layoutParams.addRule(right_of, 0);
-            // view.setLayoutParams(layoutParams);
-            // view.setRotation(ui_rotation);
-
             view = findViewById(R.id.exposure_lock);
             // layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
             // layoutParams.addRule(align_parent_top, RelativeLayout.TRUE);
