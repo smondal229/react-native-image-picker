@@ -20,11 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:background="@color/translucent_white"
+        android:background="@color/black_overlay"
         android:padding="5dp"
-        android:textColor="@color/accent"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/white"
         android:textSize="18sp"
-        android:visibility="gone"
         tools:text="Testing"/>
 
 

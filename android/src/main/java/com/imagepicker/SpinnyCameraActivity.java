@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -24,6 +25,8 @@ import com.imagepicker.spinnycamera.BaseSpinnyCameraModuleActivity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.annotation.Nullable;
 
@@ -34,16 +37,26 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
     private String photoName;
     private String photoPath;
     private int current_orientation = 0;
+    private int count = 0;
     private OrientationEventListener orientationEventListener;
     private Bitmap capturedData = null;
     private Dialog dialog = null;
+    private ArrayList<HashMap<String, String>> carPartList = new ArrayList<>();
+    private TextView carPartName;
+    private int currentPartIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getBundleData();
-        Log.d("onCreate", "Suvodip");
         super.onCreate(savedInstanceState);
+        carPartName = findViewById(R.id.txv_current_photo_label);
 
+        if (carPartList!=null && carPartList.size() > 0) {
+            carPartName.setText(new StringBuilder().append(carPartList.get(currentPartIndex).get("label"))
+                    .append(" (captured: ").append(count).append("/").append(carPartList.size()).append(")").toString());
+        } else {
+            carPartName.setVisibility(View.GONE);
+        }
         orientationEventListener = new OrientationEventListener(this) {
             @Override
             public void onOrientationChanged(int orientation) {
@@ -102,12 +115,24 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
                 try {
                     saveBitmap(bitmapData);
                     setResult(RESULT_OK,intent);
+                    count++;
                 } catch (IOException e) {
                     e.printStackTrace();
                     setResult(RESULT_CANCELED,intent);
                 }
+                intent.putExtra("partsCaptured", count);
                 dismissDialog();
-                finish();
+                if (carPartList!=null && carPartList.size() > count) {
+                    currentPartIndex = (currentPartIndex + 1) % carPartList.size();
+                    carPartName.setText(new StringBuilder()
+                            .append(carPartList.get(currentPartIndex).get("label"))
+                            .append(" (captured: ").append(count).append("/")
+                            .append(carPartList.size())
+                            .append(")")
+                            .toString());
+                } else {
+                    finish();
+                }
             }
         });
         // Discard button listener
@@ -176,8 +201,15 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
      */
     private void saveBitmap(byte[] data) throws IOException{
         //File f = generatePhotoFile();
-            FileOutputStream outputStream = new FileOutputStream(photoPath);
+            String currentPath;
+            if (carPartList!=null && carPartList.size() > currentPartIndex && carPartList.get(currentPartIndex).containsKey("path")) {
+                currentPath = carPartList.get(currentPartIndex).get("path");
+            } else {
+                currentPath = photoPath;
+            }
+            FileOutputStream outputStream = new FileOutputStream(currentPath);
             outputStream.write(data);
+            System.gc();
             outputStream.flush();
             outputStream.close();
     }
@@ -228,6 +260,8 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         Bundle bundle = getIntent().getExtras();
         photoPath=getIntent().getStringExtra("path");
         photoName=getIntent().getStringExtra("file_name");
+        currentPartIndex=getIntent().getIntExtra("currentPartIndex", 0);
+        carPartList= (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("partsList");
     }
 
     @Override
@@ -236,4 +270,3 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         super.onPause();
     }
 }
-

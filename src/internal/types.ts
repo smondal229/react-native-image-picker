@@ -25,6 +25,7 @@ export interface ImagePickerResponse {
   longitude?: number;
   timestamp?: string;
   originalRotation?: number;
+  carPartListing?: { value: string, uri: string, path: string }[]
 }
 
 export interface ImagePickerCustomButtonOptions {
@@ -52,6 +53,9 @@ export interface ImagePickerOptions {
   storageOptions?: ImagePickerStorageOptions;
   permissionDenied?: ImagePickerPermissionDeniedOptions;
   tintColor?: number | string;
+  multiple?: boolean;
+  partsList?: any[];
+  initialSection?: string;
 }
 
 export interface ImagePickerStorageOptions {

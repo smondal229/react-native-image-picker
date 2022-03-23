@@ -312,7 +312,6 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         // mContainerPhotoTemplateList.setVisibility(View.GONE);
         // if (mPhotoClick == PhotoClick.SINGLE_CLICK) {
         // mImbPhotoListVisibilityToggle.setVisibility(View.GONE);
-        mTxvCurrentPhotoLabel.setVisibility(View.GONE);
         mImageView.setVisibility(View.GONE);
         // }
         // else {

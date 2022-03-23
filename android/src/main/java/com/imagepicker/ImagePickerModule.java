@@ -51,6 +51,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.facebook.react.modules.core.PermissionListener;
@@ -87,6 +89,10 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   private Boolean pickVideo = false;
   private Boolean pickBoth = false;
   private ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
+  private ArrayList<Object> partsList= new ArrayList<>();
+  private final ArrayList<ImageConfig> imageConfigList= new ArrayList<>();
+  private String initialSection = "";
+  private int initialIndex = 0;
 
   @Deprecated
   private int videoQuality = 1;
@@ -275,10 +281,55 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       cameraIntent = new Intent(getContext(), SpinnyCameraActivity.class);
       cameraIntent.putExtra("image_required",true);
       cameraIntent.putExtra("video_required",false);
-      cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+      cameraIntent.putExtra("currentSection", initialSection);
 
-      final File original = createNewFile(reactContext, this.options, false);
-      imageConfig = imageConfig.withOriginalFile(original);
+      File original;
+      if (partsList.size() > 0) {
+        int i=0;
+        for (Object part: partsList) {
+          HashMap<String, Object> map = (HashMap<String, Object>)part;
+          if (map.containsKey("label") && map.get("label").equals(initialSection)) {
+            initialIndex = i;
+          }
+          original = createNewFile(reactContext, this.options, false);
+          imageConfig = imageConfig.withOriginalFile(original);
+          if (imageConfig.original != null) {
+            cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original);
+            map.put("path", original.getAbsolutePath());
+            imageConfigList.add(imageConfig);
+          }else {
+            responseHelper.invokeError(callback, "Couldn't get file path for photo");
+            return;
+          }
+          if (cameraCaptureURI == null)
+          {
+            responseHelper.invokeError(callback, "Couldn't get file path for photo");
+            return;
+          }
+          i++;
+        }
+
+        cameraIntent.setAction(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+        cameraIntent.putExtra("partsList", partsList);
+        cameraIntent.putExtra("currentPartIndex", initialIndex);
+      } else {
+        cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        original = createNewFile(reactContext, this.options, false);
+        imageConfig = imageConfig.withOriginalFile(original);
+
+        cameraIntent.putExtra("path", original.getAbsolutePath());
+        if (imageConfig.original != null) {
+          cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original);
+        }else {
+          responseHelper.invokeError(callback, "Couldn't get file path for photo");
+          return;
+        }
+        if (cameraCaptureURI == null)
+        {
+          responseHelper.invokeError(callback, "Couldn't get file path for photo");
+          return;
+        }
+      }
 
       if (imageConfig.original != null) {
         cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original);
@@ -291,7 +342,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         responseHelper.invokeError(callback, "Couldn't get file path for photo");
         return;
       }
-      cameraIntent.putExtra("path", original.getAbsolutePath());
     }
 
     if (cameraIntent.resolveActivity(reactContext.getPackageManager()) == null)
@@ -403,7 +453,20 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     switch (requestCode)
     {
       case REQUEST_LAUNCH_IMAGE_CAPTURE:
-        uri = cameraCaptureURI;
+        if (partsList.size() > 0) {
+          int countPhotos = data.getIntExtra("partsCaptured", 0);
+          partsList = new ArrayList<>(partsList.subList(initialIndex, countPhotos));
+
+          int j=0;
+          for (Object part : partsList) {
+            HashMap<String, Object> partAttrs = (HashMap<String, Object>) part;
+            partAttrs.put("uri", RealPathUtil.compatUriFromFile(reactContext, imageConfigList.get(j).original));
+            partsList.set(j, partAttrs);
+            j++;
+          }
+        } else {
+          uri = cameraCaptureURI;
+        }
         break;
 
       case REQUEST_LAUNCH_IMAGE_LIBRARY:
@@ -449,6 +512,22 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         return;
     }
 
+    if (partsList.size() > 0) {
+      for (int i=0; i<partsList.size(); i++) {
+        HashMap<String, Object> part = (HashMap<String, Object>) partsList.get(i);
+        compressImage(imageConfigList.get(i), requestCode, (Uri) part.get("uri"));
+      }
+    } else {
+      compressImage(imageConfig, requestCode, uri);
+    }
+
+    if (partsList.size() > 0) responseHelper.putArray("carPartListing", partsList);
+    responseHelper.invokeResponse(callback);
+    callback = null;
+    this.options = null;
+  }
+
+  public void compressImage(@NonNull ImageConfig imageConfig, final int requestCode, @NonNull Uri uri) {
     final ReadExifResult result = readExifInterface(responseHelper, imageConfig);
 
     if (result.error != null)
@@ -464,7 +543,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     BitmapFactory.decodeFile(imageConfig.original.getAbsolutePath(), options);
     int initialWidth = options.outWidth;
     int initialHeight = options.outHeight;
-    updatedResultResponse(uri, imageConfig.original.getAbsolutePath());
+    if (partsList.size() == 0) updatedResultResponse(uri, imageConfig.original.getAbsolutePath());
 
     // don't create a new file if contraint are respected
     if (imageConfig.useOriginal(initialWidth, initialHeight, result.currentRotation))
@@ -488,7 +567,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         responseHelper.putInt("width", options.outWidth);
         responseHelper.putInt("height", options.outHeight);
 
-        updatedResultResponse(uri, imageConfig.resized.getAbsolutePath());
+        if (partsList.size() == 0) updatedResultResponse(uri, imageConfig.resized.getAbsolutePath());
         fileScan(reactContext, imageConfig.resized.getAbsolutePath());
       }
     }
@@ -512,11 +591,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         return;
       }
     }
-
-    responseHelper.invokeResponse(callback);
-    callback = null;
-    this.options = null;
   }
+
+
 
   public void invokeCustomButton(@NonNull final String action)
   {
@@ -782,6 +859,14 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     videoDurationLimit = 0;
     if (options.hasKey("durationLimit")) {
       videoDurationLimit = options.getInt("durationLimit");
+    }
+
+    if (options.hasKey("partsList")) {
+      partsList = options.getArray("partsList").toArrayList();
+    }
+
+    if (options.hasKey("initialSection")) {
+      initialSection = options.getString("initialSection");
     }
   }
 }

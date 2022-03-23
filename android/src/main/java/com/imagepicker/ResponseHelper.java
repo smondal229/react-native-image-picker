@@ -1,10 +1,21 @@
 package com.imagepicker;
 
+import android.net.Uri;
+
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by rusfearuth on 24.02.17.
@@ -46,6 +57,27 @@ public class ResponseHelper
                           final double value)
     {
         response.putDouble(key, value);
+    }
+
+    public void putArray(@NonNull final String key, final ArrayList value) {
+        WritableArray wr = new WritableNativeArray();
+        for (Object i : value) {
+            HashMap<String, Object> mp = (HashMap<String, Object>) i;
+            WritableMap wm = new WritableNativeMap();
+
+            for (String attr : mp.keySet()) {
+                if (mp.get(attr) instanceof String) {
+                    wm.putString(attr, (String) mp.get(attr));
+                }
+
+                if (mp.get(attr) instanceof Uri) {
+                    wm.putString("uri", Objects.requireNonNull(mp.get("uri")).toString());
+                }
+            }
+
+            wr.pushMap(wm);
+        }
+        response.putArray(key, wr);
     }
 
     public void invokeCustomButton(@NonNull final Callback callback,

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="accent">#FF4081</color>
+    <color name="accent">#6300a3</color>
     <color name="translucent_white">#55FFFFFF</color>
+    <color name="black_overlay">#44000000</color>
+    <color name="white">#FFFFFF</color>
 </resources>
