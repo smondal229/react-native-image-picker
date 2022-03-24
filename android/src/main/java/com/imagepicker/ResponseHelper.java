@@ -14,6 +14,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -64,14 +65,22 @@ public class ResponseHelper
         for (Object i : value) {
             HashMap<String, Object> mp = (HashMap<String, Object>) i;
             WritableMap wm = new WritableNativeMap();
+            Set<String> keySet = new HashSet<String>() {{
+                add("label");
+                add("value");
+                add("path");
+                add("uri");
+            }};
 
-            for (String attr : mp.keySet()) {
-                if (mp.get(attr) instanceof String) {
-                    wm.putString(attr, (String) mp.get(attr));
-                }
+            for (String attr : keySet) {
+                if (mp.containsKey(attr)) {
+                    if (mp.get(attr) instanceof String) {
+                        wm.putString(attr, (String) mp.get(attr));
+                    }
 
-                if (mp.get(attr) instanceof Uri) {
-                    wm.putString("uri", Objects.requireNonNull(mp.get("uri")).toString());
+                    if (mp.get(attr) instanceof Uri) {
+                        wm.putString("uri", Objects.requireNonNull(mp.get("uri")).toString());
+                    }
                 }
             }
 

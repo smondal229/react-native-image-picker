@@ -296,6 +296,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
           if (imageConfig.original != null) {
             cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original);
             map.put("path", original.getAbsolutePath());
+            map.put("index", i);
             imageConfigList.add(imageConfig);
           }else {
             responseHelper.invokeError(callback, "Couldn't get file path for photo");
@@ -455,18 +456,25 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       case REQUEST_LAUNCH_IMAGE_CAPTURE:
         if (partsList.size() > 0) {
           int countPhotos = data.getIntExtra("partsCaptured", 0);
-          partsList = new ArrayList<>(partsList.subList(initialIndex, countPhotos));
+          final ArrayList<Object> tempList = partsList;
+          int partsSize = tempList.size();
+
+          if (initialIndex > 0 && initialIndex + countPhotos > partsSize) {
+            partsList = new ArrayList<>(partsList.subList(0,(initialIndex+countPhotos)%partsSize));
+            partsList.addAll(new ArrayList<>(tempList.subList(initialIndex, partsSize)));
+          } else {
+            partsList = new ArrayList<>(partsList.subList(initialIndex,initialIndex+countPhotos));
+          }
 
           int j=0;
           for (Object part : partsList) {
             HashMap<String, Object> partAttrs = (HashMap<String, Object>) part;
-            partAttrs.put("uri", RealPathUtil.compatUriFromFile(reactContext, imageConfigList.get(j).original));
+            partAttrs.put("uri", RealPathUtil.compatUriFromFile(reactContext, imageConfigList.get((int)partAttrs.get("index")).original));
             partsList.set(j, partAttrs);
             j++;
           }
-        } else {
-          uri = cameraCaptureURI;
         }
+        uri = cameraCaptureURI;
         break;
 
       case REQUEST_LAUNCH_IMAGE_LIBRARY:
@@ -515,8 +523,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     if (partsList.size() > 0) {
       for (int i=0; i<partsList.size(); i++) {
         HashMap<String, Object> part = (HashMap<String, Object>) partsList.get(i);
-        compressImage(imageConfigList.get(i), requestCode, (Uri) part.get("uri"));
+        compressImage(imageConfigList.get((int)part.get("index")), requestCode, (Uri) part.get("uri"));
       }
+      imageConfigList.clear();
     } else {
       compressImage(imageConfig, requestCode, uri);
     }
