@@ -532,6 +532,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
 
     if (partsList.size() > 0) responseHelper.putArray("carPartListing", partsList);
     responseHelper.invokeResponse(callback);
+    partsList.clear();
     callback = null;
     this.options = null;
   }
