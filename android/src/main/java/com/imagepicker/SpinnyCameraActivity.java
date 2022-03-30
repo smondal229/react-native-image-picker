@@ -1,14 +1,19 @@
 package com.imagepicker;
 
+import static com.imagepicker.utils.MediaUtils.createNewFile;
+
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
@@ -20,7 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.facebook.react.bridge.ReadableMap;
+import com.imagepicker.media.ImageConfig;
 import com.imagepicker.spinnycamera.BaseSpinnyCameraModuleActivity;
+import com.imagepicker.utils.RealPathUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,6 +52,9 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
     private ArrayList<HashMap<String, String>> carPartList = new ArrayList<>();
     private TextView carPartName;
     private int currentPartIndex;
+    private ArrayList<ImageConfig> imageConfigList = new ArrayList<>();
+    private Context moduleContext = null;
+    private ReadableMap moduleOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +98,22 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         showImagePreviewDialog(data);
     }
 
+    private void appendImageToList(ArrayList<HashMap<String, String>> photosList) {
+        File original = createNewFile(ImagePickerModule.reactContext, ImagePickerModule.options, false);
+        ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
+        imageConfig = imageConfig.withOriginalFile(original);
+//        int i=photosList.size()-1;
+//        while (photosList.get(i).get("label").equals(sectionToBeAdded.get("label"))) {
+//            ++i;
+//        }
+        HashMap map = new HashMap(carPartList.get(this.currentPartIndex));
+        if (imageConfig.original != null) {
+            map.put("path", original.getAbsolutePath());
+            map.put("index", ImagePickerModule.imageConfigList.size());
+            ImagePickerModule.imageConfigList.add(imageConfig);
+        }
+        photosList.add(this.currentPartIndex+1, map);
+    }
     // Show photo preview
     private void showImagePreviewDialog(@Nullable final byte[] bitmapData) {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapData, 0, bitmapData.length);
@@ -109,30 +136,7 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent();
-                intent.putExtra("file_name",photoName);
-                intent.putExtra("path",photoPath);
-                try {
-                    saveBitmap(bitmapData);
-                    setResult(RESULT_OK,intent);
-                    count++;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    setResult(RESULT_CANCELED,intent);
-                }
-                intent.putExtra("partsCaptured", count);
-                dismissDialog();
-                if (carPartList!=null && carPartList.size() > count) {
-                    currentPartIndex = (currentPartIndex + 1) % carPartList.size();
-                    carPartName.setText(new StringBuilder()
-                            .append(carPartList.get(currentPartIndex).get("label"))
-                            .append(" (captured: ").append(count).append("/")
-                            .append(carPartList.size())
-                            .append(")")
-                            .toString());
-                } else {
-                    finish();
-                }
+                onOkPressed(bitmapData);
             }
         });
         // Discard button listener
@@ -143,12 +147,21 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
                 dismissDialog();
             }
         });
+        Button btn_add_more = dialog.findViewById(R.id.add_more_photo);
+        btn_add_more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appendImageToList(carPartList);
+                onOkPressed(bitmapData);
+            }
+        });
         // Show dialog
         dialog.show();
     }
 
     private void rotateButtons() {
         LinearLayout buttonContainer = dialog.findViewById(R.id.button_container);
+        ImageView previewImg = dialog.findViewById(R.id.imv_photo_preview);
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) buttonContainer.getLayoutParams();
         int parent_pos = 0;
         int rotation = this.getWindowManager().getDefaultDisplay().getRotation();
@@ -174,24 +187,42 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         int relative_orientation = (current_orientation + degrees) % 360;
         int ui_rotation = (360 - relative_orientation) % 360;
 
+        int margin = getMeasureInDp(-25);
+        int padding = getMeasureInDp(90);
         if (ui_rotation == 0) {
+            previewImg.setPadding(0, 0, 0, padding);
             parent_pos = RelativeLayout.ALIGN_BOTTOM;
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            layoutParams.setMargins(0, 0, 0, getMeasureInDp(-5));
         } else if (ui_rotation == 90) {
+            previewImg.setPadding(padding, 0, 0, 0);
             parent_pos = RelativeLayout.ALIGN_LEFT;
             layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+            layoutParams.setMargins(margin, 0, 0, 0);
         } else if (ui_rotation == 180) {
+            previewImg.setPadding(0, padding, 0, 0);
             parent_pos = RelativeLayout.ALIGN_TOP;
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            layoutParams.setMargins(0, 0, 0, getMeasureInDp(-5));
         } else if (ui_rotation == 270) {
+            previewImg.setPadding(0, 0, padding, 0);
             parent_pos = RelativeLayout.ALIGN_RIGHT;
             layoutParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+            layoutParams.setMargins(0, 0, margin, 0);
         }
 
         buttonContainer.setRotation(ui_rotation);
         layoutParams.addRule(parent_pos, R.id.imv_photo_preview);
         buttonContainer.setLayoutParams(layoutParams);
         buttonContainer.bringToFront();
+    }
+
+    private int getMeasureInDp(int pixel) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                pixel,
+                getResources().getDisplayMetrics()
+        );
     }
 
     /**
@@ -264,6 +295,34 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         carPartList= (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("partsList");
     }
 
+    private void onOkPressed(@Nullable final byte[] bitmapData) {
+        Intent intent=new Intent();
+        intent.putExtra("file_name",photoName);
+        intent.putExtra("path",photoPath);
+
+        try {
+            saveBitmap(bitmapData);
+            setResult(RESULT_OK,intent);
+            count++;
+            intent.putExtra("partsCaptured", count);
+            intent.putExtra("carPartList", carPartList);
+        } catch (IOException e) {
+            e.printStackTrace();
+            setResult(RESULT_CANCELED,intent);
+        }
+        dismissDialog();
+        if (carPartList!=null && carPartList.size() > count) {
+            currentPartIndex = (currentPartIndex + 1) % carPartList.size();
+            carPartName.setText(new StringBuilder()
+                    .append(carPartList.get(currentPartIndex).get("label"))
+                    .append(" (captured: ").append(count).append("/")
+                    .append(carPartList.size())
+                    .append(")")
+                    .toString());
+        } else {
+            finish();
+        }
+    }
     @Override
     protected void onPause() {
         orientationEventListener.disable();

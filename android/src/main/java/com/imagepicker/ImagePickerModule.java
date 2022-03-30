@@ -50,6 +50,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,20 +78,20 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   public static final int REQUEST_PERMISSIONS_FOR_CAMERA  = 14001;
   public static final int REQUEST_PERMISSIONS_FOR_LIBRARY = 14002;
 
-  private final ReactApplicationContext reactContext;
+  public static ReactApplicationContext reactContext;
   private final int dialogThemeId;
 
   protected Callback callback;
   private Callback permissionRequestCallback;
 
-  private ReadableMap options;
+  public static ReadableMap options;
   protected Uri cameraCaptureURI;
   private Boolean noData = false;
   private Boolean pickVideo = false;
   private Boolean pickBoth = false;
   private ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
   private ArrayList<Object> partsList= new ArrayList<>();
-  private final ArrayList<ImageConfig> imageConfigList= new ArrayList<>();
+  public static final ArrayList<ImageConfig> imageConfigList= new ArrayList<>();
   private String initialSection = "";
   private int initialIndex = 0;
 
@@ -312,6 +313,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
 
         cameraIntent.setAction(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
         cameraIntent.putExtra("partsList", partsList);
+//        cameraIntent.putExtra("reactContext", (Serializable) reactContext);
+//        cameraIntent.putExtra("moduleOptions", (Serializable) this.options);
+//        cameraIntent.putExtra("imageConfigList", imageConfigList);
         cameraIntent.putExtra("currentPartIndex", initialIndex);
       } else {
         cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -456,6 +460,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       case REQUEST_LAUNCH_IMAGE_CAPTURE:
         if (partsList.size() > 0) {
           int countPhotos = data.getIntExtra("partsCaptured", 0);
+          partsList = (ArrayList<Object>) data.getSerializableExtra("carPartList");
           final ArrayList<Object> tempList = partsList;
           int partsSize = tempList.size();
 
@@ -627,7 +632,6 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   {
     return getCurrentActivity();
   }
-
 
   private boolean passResult(int requestCode)
   {
