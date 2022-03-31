@@ -367,5 +367,6 @@
     <!--Spinny Camera Activity-->
     <string name="ok">ok</string>
     <string name="discard">Discard</string>
+    <string name="add_more_part_photo">+ ADD MORE</string>
 
 </resources>
