@@ -63,8 +63,7 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         carPartName = findViewById(R.id.txv_current_photo_label);
 
         if (carPartList!=null && carPartList.size() > 0) {
-            carPartName.setText(new StringBuilder().append(carPartList.get(currentPartIndex).get("label"))
-                    .append(" (captured: ").append(count).append("/").append(carPartList.size()).append(")").toString());
+            carPartName.setText(new StringBuilder().append(carPartList.get(currentPartIndex).get("label")).toString());
         } else {
             carPartName.setVisibility(View.GONE);
         }
@@ -315,9 +314,6 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
             currentPartIndex = (currentPartIndex + 1) % carPartList.size();
             carPartName.setText(new StringBuilder()
                     .append(carPartList.get(currentPartIndex).get("label"))
-                    .append(" (captured: ").append(count).append("/")
-                    .append(carPartList.size())
-                    .append(")")
                     .toString());
         } else {
             finish();
