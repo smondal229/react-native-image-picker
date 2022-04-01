@@ -468,7 +468,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
             partsList = new ArrayList<>(partsList.subList(0,(initialIndex+countPhotos)%partsSize));
             partsList.addAll(new ArrayList<>(tempList.subList(initialIndex, partsSize)));
           } else {
-            partsList = new ArrayList<>(partsList.subList(initialIndex,initialIndex+countPhotos));
+            partsList = new ArrayList<>(partsList.subList(initialIndex, initialIndex+countPhotos));
           }
 
           int j=0;

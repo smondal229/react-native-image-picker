@@ -67,6 +67,7 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
         } else {
             carPartName.setVisibility(View.GONE);
         }
+
         orientationEventListener = new OrientationEventListener(this) {
             @Override
             public void onOrientationChanged(int orientation) {
@@ -147,13 +148,17 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
             }
         });
         Button btn_add_more = dialog.findViewById(R.id.add_more_photo);
-        btn_add_more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                appendImageToList(carPartList);
-                onOkPressed(bitmapData);
-            }
-        });
+        if (carPartList!=null && carPartList.size() > 0) {
+            btn_add_more.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    appendImageToList(carPartList);
+                    onOkPressed(bitmapData);
+                }
+            });
+        } else {
+            btn_add_more.setVisibility(View.GONE);
+        }
         // Show dialog
         dialog.show();
     }
