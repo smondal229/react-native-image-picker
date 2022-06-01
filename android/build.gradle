@@ -37,17 +37,17 @@ android {
         }
     }
 
-    sourceSets.main.java { 
-        srcDir 'src'
-        exclude '**/ImagePickerModule.java'
-        exclude '**/ImagePickerPackage.java'
-        exclude '**/TestableImagePickerModule.java'
-        exclude '**/MediaUtils.java'
-        exclude '**/PermissionUtils.java'
-        exclude '**/UI.java'
-        exclude '**/OnImagePickerPermissionsCallback.java'
-        exclude '**/test/**'
-    }
+    // sourceSets.main.java { 
+    //     srcDir 'src'
+    //     exclude '**/ImagePickerModule.java'
+    //     exclude '**/ImagePickerPackage.java'
+    //     exclude '**/TestableImagePickerModule.java'
+    //     exclude '**/MediaUtils.java'
+    //     exclude '**/PermissionUtils.java'
+    //     exclude '**/UI.java'
+    //     exclude '**/OnImagePickerPermissionsCallback.java'
+    //     exclude '**/test/**'
+    // }
 }
 
 repositories {
