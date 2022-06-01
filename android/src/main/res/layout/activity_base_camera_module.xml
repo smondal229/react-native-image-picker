@@ -20,11 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:background="@color/translucent_white"
+        android:background="@color/overlay"
         android:padding="5dp"
-        android:textColor="@color/accent"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/white"
         android:textSize="18sp"
-        android:visibility="gone"
         tools:text="Testing"/>
 
 
@@ -36,19 +36,19 @@
         android:layout_height="wrap_content">
 
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/switch_camera"-->
-<!--            android:layout_width="50dp"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:background="@null"-->
-<!--            android:layout_marginLeft="25dp"-->
-<!--            android:contentDescription="@string/switch_camera"-->
-<!--            android:onClick="clickedSwitchCamera"-->
-<!--            android:padding="10dp"-->
-<!--            android:scaleType="fitCenter"-->
-<!--            android:src="@drawable/switch_camera"-->
-<!--            android:visibility="gone"-->
-<!--            />-->
+        <!--        <ImageButton-->
+        <!--            android:id="@+id/switch_camera"-->
+        <!--            android:layout_width="50dp"-->
+        <!--            android:layout_height="50dp"-->
+        <!--            android:background="@null"-->
+        <!--            android:layout_marginLeft="25dp"-->
+        <!--            android:contentDescription="@string/switch_camera"-->
+        <!--            android:onClick="clickedSwitchCamera"-->
+        <!--            android:padding="10dp"-->
+        <!--            android:scaleType="fitCenter"-->
+        <!--            android:src="@drawable/switch_camera"-->
+        <!--            android:visibility="gone"-->
+        <!--            />-->
 
         <ImageButton
             android:id="@+id/take_photo"
@@ -138,52 +138,52 @@
         android:src="@drawable/exposure"
         android:visibility="gone"/>
 
-<!--    <SeekBar-->
-<!--        android:id="@+id/exposure_seekbar"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_centerVertical="true"-->
-<!--        android:contentDescription="@string/exposure_compensation"-->
-<!--        android:visibility="gone"/>-->
+    <!--    <SeekBar-->
+    <!--        android:id="@+id/exposure_seekbar"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_centerVertical="true"-->
+    <!--        android:contentDescription="@string/exposure_compensation"-->
+    <!--        android:visibility="gone"/>-->
 
-<!--    <ZoomControls-->
-<!--        android:id="@+id/exposure_seekbar_zoom"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_centerVertical="true"-->
-<!--        android:contentDescription="@string/exposure_compensation"-->
-<!--        android:visibility="gone" />-->
+    <!--    <ZoomControls-->
+    <!--        android:id="@+id/exposure_seekbar_zoom"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_centerVertical="true"-->
+    <!--        android:contentDescription="@string/exposure_compensation"-->
+    <!--        android:visibility="gone" />-->
 
-<!--    <SeekBar-->
-<!--        android:id="@+id/iso_seekbar"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_centerVertical="true"-->
-<!--        android:contentDescription="@string/iso"-->
-<!--        android:visibility="gone" />-->
+    <!--    <SeekBar-->
+    <!--        android:id="@+id/iso_seekbar"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_centerVertical="true"-->
+    <!--        android:contentDescription="@string/iso"-->
+    <!--        android:visibility="gone" />-->
 
-<!--    <SeekBar-->
-<!--        android:id="@+id/exposure_time_seekbar"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_centerVertical="true"-->
-<!--        android:contentDescription="@string/exposure"-->
-<!--        android:visibility="gone" />-->
+    <!--    <SeekBar-->
+    <!--        android:id="@+id/exposure_time_seekbar"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_centerVertical="true"-->
+    <!--        android:contentDescription="@string/exposure"-->
+    <!--        android:visibility="gone" />-->
 
-<!--    <ImageButton-->
-<!--        android:id="@+id/switch_video"-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:contentDescription="@string/switch_video"-->
-<!--        android:onClick="clickedSwitchVideo"-->
-<!--        android:padding="10dp"-->
-<!--        android:scaleType="fitCenter"-->
-<!--        android:src="@drawable/switch_video"-->
-<!--        />-->
+    <!--    <ImageButton-->
+    <!--        android:id="@+id/switch_video"-->
+    <!--        android:layout_width="50dp"-->
+    <!--        android:layout_height="50dp"-->
+    <!--        android:contentDescription="@string/switch_video"-->
+    <!--        android:onClick="clickedSwitchVideo"-->
+    <!--        android:padding="10dp"-->
+    <!--        android:scaleType="fitCenter"-->
+    <!--        android:src="@drawable/switch_video"-->
+    <!--        />-->
     <FrameLayout
         android:id="@+id/prefs_container"
         android:layout_width="match_parent"
@@ -204,22 +204,22 @@
         android:layout_below="@+id/settings"
         android:layout_toStartOf="@+id/settings"/>
 
-<!--    <FrameLayout-->
-<!--        android:id="@+id/container_photo_template_list"-->
-<!--        android:layout_width="@dimen/width_photo_template_list"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:visibility="gone"-->
-<!--        tools:layout="@layout/fragment_photo_template"/>-->
+    <!--    <FrameLayout-->
+    <!--        android:id="@+id/container_photo_template_list"-->
+    <!--        android:layout_width="@dimen/width_photo_template_list"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:visibility="gone"-->
+    <!--        tools:layout="@layout/fragment_photo_template"/>-->
 
-<!--    <ImageButton-->
-<!--        android:id="@+id/btn_template_list_toggle"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_centerVertical="true"-->
-<!--        android:layout_toEndOf="@id/container_photo_template_list"-->
-<!--        android:onClick="toggleTemplateListVisibility"-->
-<!--        android:src="@android:drawable/ic_media_play"-->
-<!--        android:visibility="gone"-->
-<!--        tools:ignore="ContentDescription"/>-->
+    <!--    <ImageButton-->
+    <!--        android:id="@+id/btn_template_list_toggle"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_centerVertical="true"-->
+    <!--        android:layout_toEndOf="@id/container_photo_template_list"-->
+    <!--        android:onClick="toggleTemplateListVisibility"-->
+    <!--        android:src="@android:drawable/ic_media_play"-->
+    <!--        android:visibility="gone"-->
+    <!--        tools:ignore="ContentDescription"/>-->
 
 </RelativeLayout>

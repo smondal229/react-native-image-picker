@@ -140,7 +140,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         // init views
         mImageView = (ImageView) findViewById(R.id.imageView);
         // mImageView.setImageResource(R.drawable.);
-        mTxvCurrentPhotoLabel = (TextView) findViewById(R.id.txv_current_photo_label);
+//        mTxvCurrentPhotoLabel = (TextView) findViewById(R.id.txv_current_photo_label);
         // mContainerPhotoTemplateList =
         // findViewById(R.id.container_photo_template_list);
         // mImbPhotoListVisibilityToggle = (ImageButton)
@@ -312,7 +312,7 @@ public abstract class BaseSpinnyCameraModuleActivity extends Activity {
         // mContainerPhotoTemplateList.setVisibility(View.GONE);
         // if (mPhotoClick == PhotoClick.SINGLE_CLICK) {
         // mImbPhotoListVisibilityToggle.setVisibility(View.GONE);
-        mTxvCurrentPhotoLabel.setVisibility(View.GONE);
+//        mTxvCurrentPhotoLabel.setVisibility(View.GONE);
         mImageView.setVisibility(View.GONE);
         // }
         // else {

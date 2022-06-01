@@ -25,6 +25,7 @@ import android.webkit.MimeTypeMap;
 import android.content.pm.PackageManager;
 
 
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.imagepicker.SpinnyCameraActivity;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -51,7 +52,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -65,6 +69,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         implements ActivityEventListener
 {
   public static final String NAME = "ImagePickerManager";
+  public static final String EVENT = "photoCaptured";
 
   public static final int DEFAULT_EXPLAINING_PERMISSION_DIALIOG_THEME = R.style.DefaultExplainingPermissionsTheme;
 
@@ -75,18 +80,21 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   public static final int REQUEST_PERMISSIONS_FOR_CAMERA  = 14001;
   public static final int REQUEST_PERMISSIONS_FOR_LIBRARY = 14002;
 
-  private final ReactApplicationContext reactContext;
+  public static ReactApplicationContext reactContext;
   private final int dialogThemeId;
 
   protected Callback callback;
   private Callback permissionRequestCallback;
 
-  private ReadableMap options;
-  protected Uri cameraCaptureURI;
+  public static ReadableMap options;
+  public static Uri cameraCaptureURI;
   private Boolean noData = false;
   private Boolean pickVideo = false;
   private Boolean pickBoth = false;
-  private ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
+  public static ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
+  public ArrayList<HashMap<String, Object>> partsList = new ArrayList<>();
+  private String initialSection = "";
+  private int initialIndex = 0;
 
   @Deprecated
   private int videoQuality = 1;
@@ -94,7 +102,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   @Deprecated
   private int videoDurationLimit = 0;
 
-  private ResponseHelper responseHelper = new ResponseHelper();
+  public static ResponseHelper responseHelper = new ResponseHelper();
   private PermissionListener listener = new PermissionListener()
   {
     public boolean onRequestPermissionsResult(final int requestCode,
@@ -269,45 +277,18 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         cameraIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, videoDurationLimit);
       }
     }
-    else
-    {
-      requestCode = REQUEST_LAUNCH_IMAGE_CAPTURE;
-      cameraIntent = new Intent(getContext(), SpinnyCameraActivity.class);
-      cameraIntent.putExtra("image_required",true);
-      cameraIntent.putExtra("video_required",false);
-      cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+    else {
+      int i = 0;
 
-      final File original = createNewFile(reactContext, this.options, false);
-      imageConfig = imageConfig.withOriginalFile(original);
-
-      if (imageConfig.original != null) {
-        cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original);
-      }else {
-        responseHelper.invokeError(callback, "Couldn't get file path for photo");
-        return;
+      if (partsList.size() > 0) {
+        for (HashMap<String, Object> part : partsList) {
+          if (part.containsKey("label") && part.get("label").equals(initialSection)) {
+            initialIndex = i;
+          }
+          i++;
+        }
       }
-      if (cameraCaptureURI == null)
-      {
-        responseHelper.invokeError(callback, "Couldn't get file path for photo");
-        return;
-      }
-      cameraIntent.putExtra("path", original.getAbsolutePath());
-    }
-
-    if (cameraIntent.resolveActivity(reactContext.getPackageManager()) == null)
-    {
-      responseHelper.invokeError(callback, "Cannot launch camera");
-      return;
-    }
-
-    try
-    {
-      currentActivity.startActivityForResult(cameraIntent, requestCode);
-    }
-    catch (ActivityNotFoundException e)
-    {
-      e.printStackTrace();
-      responseHelper.invokeError(callback, "Cannot launch camera");
+      openCameraIntent(currentActivity, initialIndex);
     }
   }
 
@@ -349,9 +330,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     {
       requestCode = REQUEST_LAUNCH_IMAGE_LIBRARY;
       libraryIntent = new Intent(Intent.ACTION_PICK,
-      MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+              MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-      if (pickBoth) 
+      if (pickBoth)
       {
         libraryIntent.setType("image/* video/*");
       }
@@ -380,6 +361,55 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     }
   }
 
+  private void openCameraIntent(Activity currentActivity, int index) {
+    int requestCode;
+    Intent cameraIntent;
+
+    requestCode = REQUEST_LAUNCH_IMAGE_CAPTURE;
+    cameraIntent = new Intent(getContext(), SpinnyCameraActivity.class);
+
+    cameraIntent.putExtra("image_required",true);
+    cameraIntent.putExtra("video_required",false);
+
+    cameraIntent.putExtra("currentPartIndex", index);
+    cameraIntent.putExtra("partsList", partsList);
+
+    cameraIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+
+    final File original = createNewFile(reactContext, this.options, false);
+    imageConfig = imageConfig.withOriginalFile(original);
+
+    if (imageConfig.original != null) {
+      cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original);
+    } else {
+      responseHelper.invokeError(callback, "Couldn't get file path for photo");
+      return;
+    }
+
+    if (cameraCaptureURI == null)
+    {
+      responseHelper.invokeError(callback, "Couldn't get file path for photo");
+      return;
+    }
+    cameraIntent.putExtra("path", original.getAbsolutePath());
+
+    if (cameraIntent.resolveActivity(reactContext.getPackageManager()) == null)
+    {
+      responseHelper.invokeError(callback, "Cannot launch camera");
+      return;
+    }
+
+    try
+    {
+      currentActivity.startActivityForResult(cameraIntent, requestCode);
+    }
+    catch (ActivityNotFoundException e)
+    {
+      e.printStackTrace();
+      responseHelper.invokeError(callback, "Cannot launch camera");
+    }
+  }
+
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     //robustness code
@@ -400,9 +430,14 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     }
 
     Uri uri = null;
+    int partIndex = 0;
+    boolean addMore = false;
     switch (requestCode)
     {
       case REQUEST_LAUNCH_IMAGE_CAPTURE:
+        addMore = data.getBooleanExtra("addMore", false);
+        partIndex = data.getIntExtra("partIndex", 0);
+
         uri = cameraCaptureURI;
         break;
 
@@ -449,12 +484,23 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         return;
     }
 
+//    postCaptureImage(requestCode, uri, partIndex);
+//    responseHelper.invokeResponse(callback);
+//    if (!addMore) partIndex++;
+//    if (partIndex < partsList.size() - 1) {
+//      openCameraIntent(getCurrentActivity(), partIndex);
+//    }
+    callback = null;
+    this.options = null;
+  }
+
+  private void postCaptureImage(int requestCode, Uri uri, int partIndex) {
     final ReadExifResult result = readExifInterface(responseHelper, imageConfig);
 
     if (result.error != null)
     {
       removeUselessFiles(requestCode, imageConfig);
-      responseHelper.invokeError(callback, result.error.getMessage());
+      responseHelper.invokeError(this.callback, result.error.getMessage());
       callback = null;
       return;
     }
@@ -464,7 +510,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     BitmapFactory.decodeFile(imageConfig.original.getAbsolutePath(), options);
     int initialWidth = options.outWidth;
     int initialHeight = options.outHeight;
-    updatedResultResponse(uri, imageConfig.original.getAbsolutePath());
+    updatedResultResponse(uri, imageConfig.original.getAbsolutePath(), partIndex);
 
     // don't create a new file if contraint are respected
     if (imageConfig.useOriginal(initialWidth, initialHeight, result.currentRotation))
@@ -488,7 +534,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         responseHelper.putInt("width", options.outWidth);
         responseHelper.putInt("height", options.outHeight);
 
-        updatedResultResponse(uri, imageConfig.resized.getAbsolutePath());
+        updatedResultResponse(uri, imageConfig.resized.getAbsolutePath(), partIndex);
         fileScan(reactContext, imageConfig.resized.getAbsolutePath());
       }
     }
@@ -501,7 +547,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       {
         imageConfig = rolloutResult.imageConfig;
         uri = Uri.fromFile(imageConfig.getActualFile());
-        updatedResultResponse(uri, imageConfig.getActualFile().getAbsolutePath());
+        updatedResultResponse(uri, imageConfig.getActualFile().getAbsolutePath(), partIndex);
       }
       else
       {
@@ -513,9 +559,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       }
     }
 
-    responseHelper.invokeResponse(callback);
-    callback = null;
-    this.options = null;
+    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(EVENT, responseHelper.getResponse());
   }
 
   public void invokeCustomButton(@NonNull final String action)
@@ -550,10 +594,13 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   }
 
   private void updatedResultResponse(@Nullable final Uri uri,
-                                     @NonNull final String path)
+                                     @NonNull final String path,
+                                     @Nullable final int partIndex)
   {
     responseHelper.putString("uri", uri.toString());
     responseHelper.putString("path", path);
+    responseHelper.putString("label", (String) Objects.requireNonNull(partsList.get(partIndex).get("label")));
+    responseHelper.putString("value", (String) Objects.requireNonNull(partsList.get(partIndex).get("value")));
 
     if (!noData) {
       responseHelper.putString("data", getBase64StringFromFile(path));
@@ -675,7 +722,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
 
   private boolean isCameraAvailable() {
     return reactContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)
-      || reactContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+            || reactContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
   }
 
   private @NonNull String getRealPathFromURI(@NonNull final Uri uri) {
@@ -713,7 +760,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     return file;
   }
 
-  private String getBase64StringFromFile(String absoluteFilePath) {
+  public static String getBase64StringFromFile(String absoluteFilePath) {
     InputStream inputStream = null;
     try {
       inputStream = new FileInputStream(new File(absoluteFilePath));
@@ -782,6 +829,17 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     videoDurationLimit = 0;
     if (options.hasKey("durationLimit")) {
       videoDurationLimit = options.getInt("durationLimit");
+    }
+
+    if (options.hasKey("partsList")) {
+      partsList.clear();
+      for(Object obj : Objects.requireNonNull(options.getArray("partsList")).toArrayList()) {
+        partsList.add((HashMap<String, Object>) obj);
+      }
+    }
+
+    if (options.hasKey("initialSection")) {
+      initialSection = options.getString("initialSection");
     }
   }
 }

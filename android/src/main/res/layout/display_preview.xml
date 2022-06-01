@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/imv_photo_preview"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="400dp"
         android:layout_centerHorizontal="true"
         tools:ignore="ContentDescription"
         tools:src="@android:drawable/ic_menu_call" />
@@ -20,18 +20,32 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:translationZ="10dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_ok_photo_dialog"
-            android:layout_width="wrap_content"
+        <LinearLayout
             android:layout_height="wrap_content"
-            android:text="@string/ok"/>
+            android:layout_width="match_parent">
+            <Button
+                android:id="@+id/btn_discard_photo_dialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/discard"/>
 
-        <Button
-            android:id="@+id/btn_discard_photo_dialog"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/btn_ok_photo_dialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ok"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_height="wrap_content"
-            android:text="@string/discard"/>
+            android:layout_width="match_parent">
+            <Button
+                android:id="@+id/add_more_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/add_more_part_photo"/>
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
