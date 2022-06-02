@@ -17,7 +17,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -29,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import androidx.annotation.NonNull;
 
@@ -306,15 +304,8 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
             setResult(RESULT_CANCELED,intent);
         }
         dismissDialog();
-//        if (carPartList!=null && carPartList.size() > count) {
-//            currentPartIndex = (currentPartIndex + 1) % carPartList.size();
-//            carPartName.setText(new StringBuilder()
-//                    .append(carPartList.get(currentPartIndex).get("label"))
-//                    .toString());
-//        } else {
-//        finish();
+
         configureNextImage(addMore);
-//        }
     }
 
     @Override
@@ -324,6 +315,11 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
     }
 
     private void configureNextImage(final boolean addMore) {
+        if (carPartList == null || carPartList.size() == 0) {
+            finish();
+            return;
+        }
+
         final File original = createNewFile(ImagePickerModule.reactContext, ImagePickerModule.options, false);
         ImagePickerModule.imageConfig = ImagePickerModule.imageConfig.withOriginalFile(original);
 
@@ -444,12 +440,10 @@ public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
     {
         ImagePickerModule.responseHelper.putString("uri", uri.toString());
         ImagePickerModule.responseHelper.putString("path", path);
-        ImagePickerModule.responseHelper.putString("label", (String) Objects.requireNonNull(carPartList.get(partIndex).get("label")));
-        ImagePickerModule.responseHelper.putString("value", (String) Objects.requireNonNull(carPartList.get(partIndex).get("value")));
-
-//        if (!noData) {
-//            ImagePickerModule.responseHelper.putString("data", ImagePickerModule.getBase64StringFromFile(path));
-//        }
+        if (carPartList != null && carPartList.size() > 0) {
+            ImagePickerModule.responseHelper.putString("label", (String) Objects.requireNonNull(carPartList.get(partIndex).get("label")));
+            ImagePickerModule.responseHelper.putString("value", (String) Objects.requireNonNull(carPartList.get(partIndex).get("value")));
+        }
 
         putExtraFileInfo(path, ImagePickerModule.responseHelper);
     }
