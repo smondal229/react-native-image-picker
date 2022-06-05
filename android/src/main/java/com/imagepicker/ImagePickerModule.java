@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -26,7 +25,6 @@ import android.content.pm.PackageManager;
 
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.imagepicker.SpinnyCameraActivity;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Callback;
@@ -54,7 +52,6 @@ import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 import com.facebook.react.modules.core.PermissionListener;
@@ -366,7 +363,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     Intent cameraIntent;
 
     requestCode = REQUEST_LAUNCH_IMAGE_CAPTURE;
-    cameraIntent = new Intent(getContext(), SpinnyCameraActivity.class);
+    cameraIntent = new Intent(getContext(), MainCameraActivity.class);
 
     cameraIntent.putExtra("image_required",true);
     cameraIntent.putExtra("video_required",false);

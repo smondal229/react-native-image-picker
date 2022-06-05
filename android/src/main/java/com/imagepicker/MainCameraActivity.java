@@ -48,9 +48,9 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 
-public class SpinnyCameraActivity extends BaseSpinnyCameraModuleActivity {
-    private static final String TAG = SpinnyCameraActivity.class.getSimpleName();
-    private static final String LOG_TAG = SpinnyCameraActivity.class.getSimpleName();
+public class MainCameraActivity extends BaseSpinnyCameraModuleActivity {
+    private static final String TAG = MainCameraActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainCameraActivity.class.getSimpleName();
     private String photoName;
     private String photoPath;
     private int current_orientation = 0;
