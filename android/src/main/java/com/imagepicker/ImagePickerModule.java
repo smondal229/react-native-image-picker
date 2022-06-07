@@ -481,12 +481,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
         return;
     }
 
-//    postCaptureImage(requestCode, uri, partIndex);
-//    responseHelper.invokeResponse(callback);
-//    if (!addMore) partIndex++;
-//    if (partIndex < partsList.size() - 1) {
-//      openCameraIntent(getCurrentActivity(), partIndex);
-//    }
+    partsList = new ArrayList<>();
     callback = null;
     this.options = null;
   }
