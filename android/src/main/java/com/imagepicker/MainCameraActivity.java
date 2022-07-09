@@ -57,7 +57,7 @@ public class MainCameraActivity extends BaseSpinnyCameraModuleActivity {
     private int count = 0;
     private OrientationEventListener orientationEventListener;
     private Bitmap capturedData = null;
-    private Dialog dialog = null;
+    private Dialog dialog;
     private ArrayList<HashMap<String, String>> carPartList = new ArrayList<>();
     private TextView carPartName;
     private int currentPartIndex;
@@ -101,6 +101,10 @@ public class MainCameraActivity extends BaseSpinnyCameraModuleActivity {
         };
 
         orientationEventListener.enable();
+        dialog = new Dialog(this);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        // Set dialog view
+        dialog.setContentView(R.layout.display_preview);
     }
 
     @Override
@@ -114,12 +118,6 @@ public class MainCameraActivity extends BaseSpinnyCameraModuleActivity {
         Matrix mat = new Matrix();
         mat.postRotate(90);
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
-
-        // Create bitmap from data
-        dialog = new Dialog(this);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        // Set dialog view
-        dialog.setContentView(R.layout.display_preview);
 
         ImageView imageView = (ImageView) dialog.findViewById(R.id.imv_photo_preview);
         imageView.setImageBitmap(bitmap);
@@ -238,8 +236,9 @@ public class MainCameraActivity extends BaseSpinnyCameraModuleActivity {
     }
 
     private void dismissDialog() {
-        dialog.dismiss();
-        dialog = null;
+        if (dialog!=null) {
+            dialog.dismiss();
+        }
 //        capturedData = null;
     }
     /**
