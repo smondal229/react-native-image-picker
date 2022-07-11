@@ -92,9 +92,6 @@ public class MainCameraActivity extends BaseSpinnyCameraModuleActivity {
                     orientation = orientation % 360;
                     if (orientation != current_orientation) {
                         current_orientation = orientation;
-                        if (dialog != null) {
-//                            rotateButtons();
-                        }
                     }
                 }
             }
@@ -238,8 +235,10 @@ public class MainCameraActivity extends BaseSpinnyCameraModuleActivity {
     }
 
     private void dismissDialog() {
-        dialog.dismiss();
-        dialog = null;
+        if (dialog != null) {
+            dialog.dismiss();
+            dialog = null;
+        }
 //        capturedData = null;
     }
     /**

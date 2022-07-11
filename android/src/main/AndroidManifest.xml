@@ -5,7 +5,10 @@
   >
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <application>
-        <activity android:name=".MainCameraActivity" />
+        <activity android:name=".MainCameraActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+        />
 
         <provider
             android:name="com.imagepicker.FileProvider"
