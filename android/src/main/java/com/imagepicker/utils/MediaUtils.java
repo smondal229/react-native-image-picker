@@ -1,5 +1,7 @@
 package com.imagepicker.utils;
 
+import static com.imagepicker.ImagePickerModule.REQUEST_LAUNCH_IMAGE_CAPTURE;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,9 +10,10 @@ import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.imagepicker.ImagePickerModule;
@@ -28,8 +31,6 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import static com.imagepicker.ImagePickerModule.REQUEST_LAUNCH_IMAGE_CAPTURE;
-
 /**
  * Created by rusfearuth on 15.03.17.
  */
@@ -37,7 +38,7 @@ import static com.imagepicker.ImagePickerModule.REQUEST_LAUNCH_IMAGE_CAPTURE;
 public class MediaUtils
 {
     public static @Nullable File createNewFile(@NonNull final Context reactContext,
-                                               @NonNull final ReadableMap options,
+                                               final ReadableMap options,
                                                @NonNull final boolean forceLocal)
     {
         final String filename = new StringBuilder("image-")
@@ -48,7 +49,7 @@ public class MediaUtils
         // defaults to Public Pictures Directory
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
-        if (ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions")) 
+        if (options!=null && ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions"))
         {
             final ReadableMap storageOptions = options.getMap("storageOptions");
 
